@@ -27,6 +27,9 @@ function defineWorkers(orm) {
 			biography: {
 				type: DataTypes.TEXT,
 			},
+			photo: {
+				type: DataTypes.STRING(255),
+			},
     },
     {
       timestamps: false,
