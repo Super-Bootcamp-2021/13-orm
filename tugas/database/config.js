@@ -10,4 +10,4 @@ const CONFIG = {
   USERNAME: 'postgres',
 };
 
-exports.CONFIG = CONFIG
+exports.CONFIG = CONFIG;
