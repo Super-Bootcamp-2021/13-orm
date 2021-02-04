@@ -1,8 +1,7 @@
 const Busboy = require('busboy');
 const url = require('url');
-const { register, ERROR_REGISTER_DATA_INVALID } = require('./task-logic');
+const { register, taskSelesai, taskBatal, ERROR_REGISTER_DATA_INVALID, list } = require('./task-logic');
 const { upload } = require('../database/typeorm/storage');
-const { Writable } = require('stream');
 
 
 function storeTaskService(req, res) {
@@ -57,63 +56,64 @@ function storeTaskService(req, res) {
   req.pipe(busboy);
 }
 
-// async function getTaskByNameService(req, res) {
-//   const uri = url.parse(req.url, true);
-//   const filename = uri.pathname.replace('/cari/', '');
-//   if (!filename) {
-//     res.statusCode = 400;
-//     res.write('request tidak sesuai');
-//     res.end();
-//   }
-
-//   const value = await getTaskByName(filename);
-//   res.setHeader('Content-Type', 'application/json');
-//   const data = JSON.stringify(value);
-//   res.statusCode = 200;
-//   res.write(data);
-//   res.end();
-// }
-
-async function upTaskByNameService(req, res) {
+async function upTaskService(req, res) {
   const uri = url.parse(req.url, true);
-  const filename = uri.pathname.replace('/update/', '');
-  if (!filename) {
-    res.statusCode = 400;
-    res.write('request tidak sesuai');
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
     res.end();
+    return;
   }
-
-  const value = await upTaskByName(filename);
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value);
-  setValueToDb();
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
+  try {
+    await taskSelesai(id);
+    res.statusCode = 200;
+    res.write(`Update ID dengan ${id}`);
+    res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
+}
+async function softDeleteTaskService(req, res) {
+  const uri = url.parse(req.url, true);
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
+    res.end();
+    return;
+  }
+  try {
+    await taskBatal(id);
+    res.statusCode = 200;
+    res.write(`batalkan task dengan ${id}`);
+    res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
 }
 
 
 async function getTaskService(req, res) {
-  const value = await readTask();
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value.task);
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
-}
-async function softDeleteTaskService(req, res) {
-  const uri = url.parse(req.url, true);
-  const filename = uri.pathname.replace('/update/', '');
-  if (!filename) {
-    res.statusCode = 400;
-    res.write('request tidak sesuai');
-    res.end();
-  }
-
-  const value = await softDeleteTask(filename);
+  const value = await list();
   res.setHeader('Content-Type', 'application/json');
   const data = JSON.stringify(value);
-  setValueToDb();
   res.statusCode = 200;
   res.write(data);
   res.end();
@@ -123,6 +123,6 @@ async function softDeleteTaskService(req, res) {
 module.exports = {
   storeTaskService,
   getTaskService,
-  upTaskByNameService,
+  upTaskService,
   softDeleteTaskService
 };
