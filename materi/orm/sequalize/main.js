@@ -28,8 +28,8 @@ async function init() {
   });
   const orm2 = new Sequelize('sanbercode1', 'root', 'hasan132', {
     host: 'localhost',
-    port: 3306,
-    dialect: 'mariadb',
+    port: 5432,
+    dialect: 'postgres',
     logging: false,
   });
   const orm3 = new Sequelize('', '', '', {
