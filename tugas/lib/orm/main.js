@@ -45,26 +45,25 @@ async function writeTask(data) {
   conn.close();
 }
 
-async function readData() {
+async function readTask() {
   const conn = await init();
   const task = conn.getRepository('Task');
   let jobs = await task.find({ relations: ['assignee'] });
-  for (const job of jobs) {
-    console.log(job);
-  }
-
-  jobs = await task
-    .createQueryBuilder('Task')
-    .leftJoinAndSelect('Task.assignee', 'assignee')
-    .getMany();
-  for (const job of jobs) {
-    console.log(job);
-  }
   conn.close();
+  return JSON.stringify(jobs);
+}
+
+async function readWorker() {
+  const conn = await init();
+  const worker = conn.getRepository('Worker');
+  let workers = await worker.find();
+  conn.close();
+  return JSON.stringify(workers);
 }
 
 module.exports = {
   writeWorker,
   writeTask,
-  readData,
+  readTask,
+  readWorker,
 };
