@@ -5,66 +5,103 @@ const { WorkerSchema } = require('./entities/worker-model');
 const path = require('path');
 
 function init() {
-  return createConnection({
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'sanbercode',
-    // type: 'postgres',
-    // host: 'localhost',
-    // port: 5432,
-    // username: 'postgres',
-    // password: 'postgres',
-    // database: 'sanbercode2',
-    // type: "sqlite",
-    // database: path.resolve(__dirname, '../../../../sanbercode.db'),
-    synchronize: true,
-    // dropSchema: true,
-    timezone: 'Asia/Jakarta',
-    entities: [TaskSchema, WorkerSchema],
-  });
+    return createConnection({
+        type: 'mysql',
+        host: 'localhost',
+        port: 3306,
+        username: 'root',
+        password: '',
+        database: 'sanbercode',
+        // type: 'postgres',
+        // host: 'localhost',
+        // port: 5432,
+        // username: 'postgres',
+        // password: 'postgres',
+        // database: 'sanbercode2',
+        // type: "sqlite",
+        // database: path.resolve(__dirname, '../../../../sanbercode.db'),
+        synchronize: true,
+        // dropSchema: true,
+        timezone: 'Asia/Jakarta',
+        entities: [TaskSchema, WorkerSchema],
+    });
 }
 
 async function writeWorker(data) {
-  const conn = await init();
-  const worker = conn.getRepository('Worker');
-  const create = worker.create(data);
-  await worker.save(create);
+    const conn = await init();
+    const worker = conn.getRepository('Worker');
+    const create = worker.create(data);
+    await worker.save(create);
 
-  conn.close();
+    conn.close();
 }
 
 async function writeTask(data) {
-  const conn = await init();
-  const task = conn.getRepository('Task');
-  const create = task.create(data);
-  await task.save(create);
+    const conn = await init();
+    const task = conn.getRepository('Task');
+    const create = task.create(data);
+    await task.save(create);
 
-  conn.close();
+    conn.close();
+}
+
+async function finishTask(data) {
+    const id = data.id;
+    const conn = await init();
+    await conn
+        .createQueryBuilder()
+        .update('tasks')
+        .set({ done: true })
+        .where("id = :id", { id })
+        .execute();
+
+    conn.close();
+}
+
+async function cancelTask(data) {
+    const id = data.id;
+    const conn = await init();
+    await conn
+        .createQueryBuilder()
+        .update('tasks')
+        .set({ cancel: true })
+        .where("id = :id", { id })
+        .execute();
+
+    conn.close();
+}
+
+async function readTask() {
+    const conn = await init();
+    const task = conn.getRepository('Task');
+    let jobs = await task.find({ relations: ['assignee'] });
+    conn.close();
+    return JSON.stringify(jobs);
 }
 
 async function readData() {
-  const conn = await init();
-  const task = conn.getRepository('Task');
-  let jobs = await task.find({ relations: ['assignee'] });
-  for (const job of jobs) {
-    console.log(job);
-  }
+    const conn = await init();
+    const task = conn.getRepository('Task');
+    let jobs = await task.find({ relations: ['assignee'] });
+    for (const job of jobs) {
+        console.log(job);
+    }
 
-  jobs = await task
-    .createQueryBuilder('Task')
-    .leftJoinAndSelect('Task.assignee', 'assignee')
-    .getMany();
-  for (const job of jobs) {
-    console.log(job);
-  }
-  conn.close();
+    jobs = await task
+        .createQueryBuilder('Task')
+        .leftJoinAndSelect('Task.assignee', 'assignee')
+        .getMany();
+    for (const job of jobs) {
+        console.log(job);
+    }
+    conn.close();
 }
 
 module.exports = {
-  writeWorker,
-  writeTask,
-  readData,
+    writeWorker,
+    writeTask,
+    finishTask,
+    cancelTask,
+    readTask,
+    readData,
 };
