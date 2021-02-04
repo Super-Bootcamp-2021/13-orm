@@ -3,10 +3,7 @@ const { stdout } = require('process');
 
 const routers = require('./routers')
 
-//Task service module here
-
 const server = createServer((req, res) => {
-  req.params = {};
   routers(req, res);
 });
 

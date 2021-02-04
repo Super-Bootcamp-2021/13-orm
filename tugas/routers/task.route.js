@@ -11,14 +11,19 @@ function taskRoutes(req, res){
     let message = 'tidak ditemukan data';
     let statusCode = 200;
     const uri = url.parse(req.url, true);    
-    
+
     const respond = async () => {
       res.statusCode = statusCode;
       res.write(message);
       res.end();
     };
 
+    if(method !== 'GET'){
+        req.params = {}
+    }
+
     switch (true) {
+        
       case uri.pathname === '/task':
         res.setHeader('content-type', 'application/json');
         if (method === 'GET') {
@@ -34,7 +39,7 @@ function taskRoutes(req, res){
           respond();
         }
         break;
-      case uri.pathname.includes('/task'):
+      case /task*/.test(uri.pathname):
         res.setHeader('content-type', 'application/json');
         req.params.id = uri.pathname.split('/')[2];
         if (method === 'DELETE') {

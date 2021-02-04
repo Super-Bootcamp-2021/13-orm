@@ -1,20 +1,21 @@
 // const {connection} = require('../connection')
 const {defineTask} = require('./task')
 const {connection} = require('../connection')
-// const connect = connection();
 
 let task
 
 async function setupRelationship() {
     // worker = defineWorker();
     const connect = await connection();
-    task = defineTask(connect);
-    connect.sync({force: true});
+    await connect.drop({cascade: true});
+    await connect.sync({force: true, alter: true});
 
-    // task.belongsTo(worker, {
-    //     onDelete: 'cascade',
-    //     foreignKey: 'assigneeId',
-    // });
+    task = defineTask(connect);
+
+    task.belongsTo(worker, { // relationnya belum
+        onDelete: 'cascade',
+        foreignKey: 'WorkerId',
+    });
 }
 setupRelationship()
 
