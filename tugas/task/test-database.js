@@ -26,6 +26,7 @@ async function init() {
   await orm.authenticate();
   //   setupRelationship(orm);
   task = defineTask(orm);
+  await orm.sync();
 }
 
 async function writeData(data) {
@@ -51,6 +52,16 @@ async function updateTask(data) {
       },
     }
   );
+}
+
+async function readData(id) {
+  const taskdb = await task.findAll({
+    where: {
+      id: id,
+    },
+  });
+
+  return taskdb;
 }
 
 async function taskDone(data) {
@@ -99,9 +110,23 @@ async function cancelDB(data) {
   await taskCancel(data);
 }
 
+async function dropTable() {
+  await init();
+  await task.drop();
+}
+
+async function read(id) {
+  await init();
+  const taskr = await readData(id);
+  return taskr[0].dataValues;
+}
+
 module.exports = {
   main,
   updateDB,
   doneDB,
   cancelDB,
+  init,
+  dropTable,
+  read,
 };
