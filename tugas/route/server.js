@@ -1,12 +1,12 @@
 const { createServer } = require('http');
-const { router } = require('router');
+const { router } = require('./router');
 const { stdout } = require('process');
 
 let server;
 
 function run() {
   server = createServer((req, res) => {
-    router();
+    router(req, res);
   });
 
   // run server

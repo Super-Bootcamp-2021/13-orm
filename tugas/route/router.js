@@ -5,8 +5,6 @@ const {
   disMember,
 } = require('../lib/worker-services/worker-services');
 
-// const { addTask, updateTask, dropTask } = require('../lib/task-services');
-
 async function router(req, res) {
   function respond(statusCode, message) {
     res.statusCode = statusCode || 200;
