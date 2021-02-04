@@ -26,7 +26,7 @@ describe('Task tests', () => {
       .send(input)
       .end((err, res) => {
         this.timeout(300);
-        // expect(res.header.hasOwnProperty('content-type')).to.be.trues;
+        expect(res.header).to.have.property('content-type');
         expect(res.body.job).to.eq(input.job);
         expect(res.body.done).to.eq(input.done);
         expect(res.status).to.eq(201);

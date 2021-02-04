@@ -2,8 +2,6 @@ const Model = require('../db/models/task-model');
 
 class TaskController {
   static async read(req, res) {
-    console.log('read');
-
     try {
       const Task = await Model();
       const result = await Task.findAll();
@@ -18,7 +16,6 @@ class TaskController {
   }
 
   static create(req, res) {
-    console.log('create');
     let data = {};
 
     req.on('data', (chunk) => {
@@ -49,7 +46,6 @@ class TaskController {
   }
 
   static async delete(req, res) {
-    console.log('delete');
     const id = +req.params.id;
 
     try {
@@ -69,7 +65,6 @@ class TaskController {
   }
 
   static update(req, res) {
-    console.log('update');
     const id = +req.params.id;
     let data = {};
 
@@ -80,7 +75,7 @@ class TaskController {
     req.on('end', async () => {
       const Task = await Model();
       data = JSON.parse(data);
-      // res.setHeader('content-type', 'application/json');
+      res.setHeader('content-type', 'application/json');
       try {
         const result = await Task.update(data, { where: { id } });
         res.write(JSON.stringify(result));
