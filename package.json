@@ -1,13 +1,13 @@
 {
   "name": "orm",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "relational db using ORM",
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
     "start": "node .",
     "dev": "nodemon .",
-    "lint": "eslint ."
+    "lint": "eslint . --fix"
   },
   "author": "",
   "license": "ISC",
@@ -28,9 +28,6 @@
     "mysql": "^2.18.1",
     "nats": "^1.4.12",
     "nodemon": "^2.0.7",
-    "pg": "^8.5.1",
-    "pg-cursor": "^2.5.2",
-    "pg-hstore": "^2.3.3",
     "redis": "^3.0.2",
     "rxjs": "^6.6.3",
     "sequelize": "^6.5.0",
