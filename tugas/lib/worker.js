@@ -1,4 +1,4 @@
-const {writeData} = require('../db/models/worker.model');
+const { write,read,destroy } = require('../db/models/worker.model');
 
 async function register(data){
     try {
@@ -10,34 +10,27 @@ async function register(data){
             biografi: data.biografi,
             photo: data.photo,
         }
-        await writeData(worker);
+        await write(worker);
         return;
     } catch (error) {
         throw error
     }
 }
 
-function listWorker(){
+async function listWorker(){
     try {
-        
-        const workers = [{        // anggap bentuk data yang diperoleh dari model
-            name: 'data.name',
-            address: 'data.address',
-            email: 'data.email',
-            phone: 'data.phone',
-            biografi: 'data.bio',
-            photo: 'data.photo',
-        }]
-        return workers
+        const result = await read();
+        const data = result.map(result =>result.dataValues);
+        return data;
     } catch (error) {
         throw error
     }
 }
 
-function removeWorker(id) {
+async function removeWorker(id) {
     try {
-        // model delete here
-        return;
+        const result = await destroy(id);
+        return result;
 
     } catch (error) {
         throw error

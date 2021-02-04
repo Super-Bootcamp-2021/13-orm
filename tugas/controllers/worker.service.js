@@ -80,9 +80,9 @@ function saveWorker(req, res) {
 }
 
 //get data worker
-function getWorker(req, res) {
+async function getWorker(req, res) {
 
-    const data = listWorker();
+    const data = await listWorker();
 
     const message = JSON.stringify({
         status: 'success',
@@ -100,7 +100,7 @@ function deleteWorker(req, res) {
     const uri = url.parse(req.url, true)
     const id = uri.pathname.replace('/worker/', '')
     try {
-        const result = removeWorker();
+        const result = removeWorker(id);
         message = JSON.stringify({
             status: 'success',
             message: 'success delete data',
