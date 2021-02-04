@@ -60,7 +60,13 @@ async function deleteDataDB(con, id) {
     .execute();
   return worker;
 }
-
+async function getoneDB(id) {
+  const worker = getConnection()
+    .createQueryBuilder()
+    .where('id = :id', { id: id })
+    .execute();
+  return worker;
+}
 async function writeDataWorker(obj) {
   try {
     const conn = getConnection();
@@ -97,7 +103,7 @@ async function readDataTask() {
 async function deleteData(id) {
   try {
     const conn = getConnection();
-    await deleteDataDB(conn);
+    await deleteDataDB(conn, id);
     conn.close();
   } catch (err) {
     console.error(err);
