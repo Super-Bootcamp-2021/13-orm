@@ -3,7 +3,7 @@ const {
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('../../route/utils');
-const { writeData, readData, removeData } = require('../../database/main');
+const { writeData, readData, removeData } = require('../../database/orm');
 const { saveFile } = require('../../database/storage');
 const { Writable } = require('stream');
 const url = require('url');
