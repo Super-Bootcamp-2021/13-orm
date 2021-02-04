@@ -27,10 +27,17 @@ function init() {
   });
 }
 
-async function writeData(connection, name, profile, email, nohp, biografi) {
+async function writeData(connection, obj) {
   const worker = connection.getRepository('Worker');
 
-  const isiWorker = new Worker(null, name, profile, email, nohp, biografi);
+  const isiWorker = new Worker(
+    null,
+    obj.name,
+    obj.profile,
+    obj.email,
+    obj.nohp,
+    obj.biografi
+  );
   await worker.save(isiWorker);
   // const budi = worker.create({ name: 'budi' });
   // const susi = worker.create({ name: 'susi' });
@@ -62,10 +69,17 @@ async function readData() {
   }
 }
 
-async function writeDataWorker(name, profile, email, nohp, biografi) {
+async function writeDataWorker(obj) {
   try {
     const conn = await init();
-    await writeData(conn, name, profile, email, nohp, biografi);
+    await writeData(
+      conn,
+      obj.name,
+      obj.profile,
+      obj.email,
+      obj.nohp,
+      obj.biografi
+    );
     conn.close();
   } catch (err) {
     console.error(err);
@@ -73,7 +87,6 @@ async function writeDataWorker(name, profile, email, nohp, biografi) {
 
   // getConnection().close();
 }
-
 
 module.exports = {
   writeDataWorker,
