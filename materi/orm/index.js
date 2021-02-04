@@ -1,3 +1,3 @@
-const { main } = require('./sequalize/main');
+const { main } = require('./typeorm/main');
 
 main();
