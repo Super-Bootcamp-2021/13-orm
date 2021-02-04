@@ -52,7 +52,31 @@ async function readDataTaskDB(con) {
   const task = con.getRepository('Task');
   return task;
 }
-
+async function deleteDataDB(con, id) {
+  const worker = con
+    .createQueryBuilder()
+    .delete(Worker)
+    .where('id = :id', { id: id })
+    .execute();
+  return worker;
+}
+async function getoneDB(id) {
+  const worker = getConnection()
+    .getRepository(Worker)
+    .createQueryBuilder('worker')
+    .where('worker.id = :id', { id: id })
+    .getOne();
+  return worker;
+}
+async function updateDB(con, id, done) {
+  const task = con
+    .createQueryBuilder()
+    .update(Task)
+    .set({ done: done })
+    .where('id = :id', { id: id })
+    .execute();
+  return task;
+}
 async function writeDataWorker(obj) {
   try {
     const conn = getConnection();
@@ -86,10 +110,35 @@ async function readDataTask() {
 
   // getConnection().close();
 }
+async function deleteData(id) {
+  try {
+    const conn = getConnection();
+    await deleteDataDB(conn, id);
+    conn.close();
+    return getoneDB(id);
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function updateData(id, done) {
+  try {
+    const conn = getConnection();
+    await updateDB(conn, id, done);
+    conn.close();
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
 
 module.exports = {
   writeDataWorker,
   writeDataTask,
   init,
   readDataTask,
+  deleteData,
+  updateData,
 };
