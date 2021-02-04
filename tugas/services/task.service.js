@@ -1,8 +1,8 @@
-const {respond} = require('../route/utils')
-const {url} = require('url')
-
-async function taskServices(req, res){
-try {
+const { respond } = require('../route/utils');
+const { url } = require('url');
+const { addTask, updateTask, dropTask} = require('../lib/task-services')
+async function taskServices(req, res) {
+  try {
     const uri = url.parse(req.url, true);
     switch (uri.pathname) {
       case '/add-task':
@@ -34,4 +34,4 @@ try {
   }
 }
 
-exports.taskServices = taskServices
+exports.taskServices = taskServices;

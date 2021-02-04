@@ -1,14 +1,16 @@
-const {createServer} =  require('http') 
-const {stdout} =  require('process') 
-const taskServices = require('../services/task.service')
-const taskServices = require('../services/worker.service')
+const { createServer } = require('http');
+const { stdout } = require('process');
+const taskServices = require('../services/task.service');
+const workerServices = require('../services/worker.service');
 /**
  * run server
  */
+let server;
+
 function run() {
-  server = createServer((req, res) => {   
-    taskServices(req, res)
-    workserServices(req, res)
+  server = createServer((req, res) => {
+    taskServices(req, res);
+    workerServices(req, res);
   });
 
   // run server
@@ -27,4 +29,4 @@ function stop() {
   }
 }
 
-module.exports = { run, stop } 
+module.exports = { run, stop };

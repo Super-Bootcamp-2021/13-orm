@@ -1,8 +1,9 @@
-const {respond} = require('../route/utils')
-const {url} = require('url')
+const { respond } = require('../route/utils');
+const { url } = require('url');
+const { registerWorker, workerList, disMember} = require('../lib/task-services')
 
-async function taskServices(req, res){
-try {
+async function workerServices(req, res) {
+  try {
     const uri = url.parse(req.url, true);
     switch (uri.pathname) {
       case '/register':
@@ -34,4 +35,4 @@ try {
   }
 }
 
-exports.taskServices = taskServices
+exports.workerServices = workerServices;
