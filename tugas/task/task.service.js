@@ -26,28 +26,28 @@ function init() {
 }
 
 async function writeData(req, res) {
-  getConnection().isConnected;
-  //   const task = getConnection().getRepository('Task');
+  //   getConnection().isConnected;
+  const task = getConnection().getRepository('Task');
 
-  //   let body = '';
-  //   let job, desc;
-  //   req.on('data', async (chunk) => {
-  //     body += chunk.toString();
-  //   });
-  //   req.on('end', async () => {
-  //     body = JSON.parse(body);
-  //     job = body['job'];
-  //     desc = body['desc'];
+  let body = '';
+  let job, desc;
+  req.on('data', async (chunk) => {
+    body += chunk.toString();
+  });
+  req.on('end', async () => {
+    body = JSON.parse(body);
+    job = body['job'];
+    desc = body['desc'];
 
-  //     let hasil = JSON.stringify({ job, desc });
-  //     res.setHeader('Content-Type', 'application/json');
-  //     res.setHeader('Method', 'POST');
-  //     res.statusCode = 200;
-  //     res.write(hasil);
+    let hasil = JSON.stringify({ job, desc });
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Method', 'POST');
+    res.statusCode = 200;
+    res.write(hasil);
 
-  //     await task.save({ job, desc });
-  //   });
-  //   await task.save({ job, desc });
+    await task.save({ job, desc });
+  });
+  await task.save({ job, desc });
 }
 
 async function readData(req, res) {
