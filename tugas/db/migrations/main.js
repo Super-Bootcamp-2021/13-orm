@@ -4,19 +4,18 @@ const {connection} = require('../connection')
 
 let task
 
-async function setupRelationship() {
+async function migrate() {
     // worker = defineWorker();
-    const connect = await connection();
-    await connect.drop({cascade: true});
-    await connect.sync({force: true, alter: true});
+        const connect = await connection();
+        defineTask(connect);
+        await connect.drop({cascade: true});
+        await connect.sync({force: true, alter: true})
 
-    task = defineTask(connect);
-
-    task.belongsTo(worker, { // relationnya belum
-        onDelete: 'cascade',
-        foreignKey: 'WorkerId',
-    });
+    // task.belongsTo(worker, { // relationnya belum
+    //     onDelete: 'cascade',
+    //     foreignKey: 'WorkerId',
+    // });
 }
-setupRelationship()
+migrate()
 
 module.exports = {task}

@@ -18,7 +18,7 @@ describe('Task tests', () => {
       });
   });
 
-  const input = { id: 70, job: 'makan', done: false };
+  const input = { id: 70, name: 'makan', isCompleted: false };
   it('Should Create New Task', function (done) {
     chai
       .request(server)
@@ -26,16 +26,16 @@ describe('Task tests', () => {
       .send(input)
       .end((err, res) => {
         this.timeout(300);
-        expect(res.header).to.have.property('content-type');
-        expect(res.body.job).to.eq(input.job);
-        expect(res.body.done).to.eq(input.done);
+        // expect(res.header).to.have.property('content-type');
+        expect(res.body.name).to.eq(input.name);
+        expect(res.body.isCompleted).to.eq(input.isCompleted);
         expect(res.status).to.eq(201);
         done();
       });
   });
 
   it('Should Update Task', function (done) {
-    const updatedInput = { done: true };
+    const updatedInput = { isCompleted: true };
     chai
       .request(server)
       .put(`/task/${input.id}`)

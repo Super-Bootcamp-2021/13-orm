@@ -5,10 +5,14 @@ function defineTask(orm) {
     return orm.define(
         'task',
         {
-            job: DataTypes.TEXT,
-            done: {
+            name: DataTypes.STRING,
+            isCompleted: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
+            },
+            attachment: {
+                type: DataTypes.STRING,
+                defaultValue: null
             },
             addedAt: {
                 type: DataTypes.DATE,
