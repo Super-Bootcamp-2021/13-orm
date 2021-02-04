@@ -28,10 +28,10 @@ async function init() {
   });
   const orm = orm1;
   await orm.authenticate();
-//   setupRelationship(orm);
+  //   setupRelationship(orm);
   task = defineTask(orm);
   // await orm.drop({ cascade: true });
-  await orm.sync({ force: true, alter: true });
+  // await orm.sync({ force: true, alter: true });
 }
 
 async function writeData(data) {
@@ -61,12 +61,35 @@ async function writeData(data) {
 //   }
 // }
 
+async function taskDone(data) {
+  await task.update(
+    {
+      job: data.job,
+      attachment: data.attachment,
+      done: data.done,
+      cancel: data.cancel,
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
+}
+
 async function main(data) {
   await init();
   await writeData(data);
-//   await readData();
+  //   await readData();
+}
+
+async function updateDB(data) {
+  await init();
+  await taskDone(data);
+  //   await readData();
 }
 
 module.exports = {
   main,
+  updateDB,
 };

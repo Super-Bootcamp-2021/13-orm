@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const { stdout } = require('process');
 const url = require('url');
-const { createSvc } = require('./task.service');
+const { createSvc, updateSvc } = require('./task.service');
 
 let server;
 
@@ -20,9 +20,15 @@ function run() {
         if (req.method === 'POST') {
           return createSvc(req, res);
         } else {
-            respond(404);
+          respond(404);
         }
-
+        break;
+      case '/done':
+        if (req.method === 'POST') {
+          return updateSvc(req, res);
+        } else {
+          respond(404);
+        }
         break;
 
       default:
@@ -37,5 +43,5 @@ function run() {
 }
 
 module.exports = {
-    run,
-}
+  run,
+};
