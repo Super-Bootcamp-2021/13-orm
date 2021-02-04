@@ -1,1 +1,1 @@
-require('./materi/orm');
+require('./tugas/index');
