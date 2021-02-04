@@ -1,19 +1,24 @@
 const Busboy = require('busboy');
-const { ERROR_REGISTER_DATA_INVALID } = require('../../route/utils');
-const { writeData } = require('../../database/main');
-
+const {
+  ERROR_REGISTER_DATA_INVALID,
+  ERROR_WORKER_NOT_FOUND,
+} = require('../../route/utils');
+const { writeData, readData, removeData } = require('../../database/main');
+const { saveFile } = require('../../database/storage');
 const { Writable } = require('stream');
+const url = require('url');
 
 function addWorker(req, res) {
+  const busboy = new Busboy({ headers: req.headers });
+
   const data = {
     name: '',
-    address: '',
+    address: 0,
     phone: '',
     email: '',
     bio: '',
     photo: '',
   };
-  const busboy = new Busboy({ headers: req.headers });
 
   let finished = false;
 
@@ -24,8 +29,9 @@ function addWorker(req, res) {
       res.end();
     }
   }
+
   busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
-    switch (filename) {
+    switch (fieldname) {
       case 'photo':
         try {
           data.photo = await saveFile(file, mimetype);
@@ -34,16 +40,16 @@ function addWorker(req, res) {
         }
         if (finished) {
           try {
-            const registrant = writeData(data);
+            await writeData(data);
             res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(registrant));
+            res.write(JSON.stringify(data));
           } catch (err) {
             if (err === ERROR_REGISTER_DATA_INVALID) {
               res.statusCode = 401;
             } else {
               res.statusCode = 500;
             }
-            res(err);
+            res.write(err);
           }
           res.end();
         }
@@ -58,8 +64,9 @@ function addWorker(req, res) {
       }
     }
   });
+
   busboy.on('field', (fieldname, val) => {
-    if (['name', 'address', 'phone', 'email', 'bio'].includes(fieldname)) {
+    if (['name', 'address', 'email', 'phone', 'bio'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });
@@ -97,7 +104,7 @@ async function disMember(req, res) {
     return;
   }
   try {
-    const worker = await remove(id);
+    const worker = await removeData(id);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
@@ -115,4 +122,4 @@ async function disMember(req, res) {
   }
 }
 
-module.exports= { addWorker, workerList, disMember };
+module.exports = { addWorker, workerList, disMember };

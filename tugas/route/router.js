@@ -1,7 +1,7 @@
-const { respond } = require('./utils');
-const { url } = require('url');
+
+const url = require('url');
 const {
-  registerWorker,
+  addWorker,
   workerList,
   disMember,
 } = require('../lib/worker-services/worker-services');
@@ -9,12 +9,19 @@ const {
 // const { addTask, updateTask, dropTask } = require('../lib/task-services');
 
 async function router(req, res) {
+
+  function respond(statusCode, message) {
+    res.statusCode = statusCode || 200;
+    res.write(message || '');
+    res.end();
+  }
   try {
+    
     const uri = url.parse(req.url, true);
     switch (uri.pathname) {
       case '/register':
         if (req.method === 'POST') {
-          return registerWorker(req, res);
+          return addWorker(req, res);
         } else {
           respond(404);
         }

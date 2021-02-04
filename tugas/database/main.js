@@ -24,43 +24,46 @@ async function init() {
   );
   await orm.authenticate();
   setupRelationship(orm);
-  await orm.drop({ cascade: true });
-  await orm.sync({ force: true });
 }
 
 async function writeData(data) {
-  if (data['email']) {
     await worker.create(data);
-  } else {
-    await task.create(data);
-  }
 }
+
+
+async function removeData(data){
+  return worker.findOne({ where: { id: data } });
+}
+
+
+async function updateTask(data) {
+  const instance = task.findOne({ where: { id: data.id } });
+  instance.job = data.job
+  await instance.save()
+}
+``
+async function writeDataTask(data) {
+  await task.create(data);
+}
+
+
+async function removeData(data){
+return task.findOne({ where: { id: data } });
+}
+
 
 async function readData() {
-  const res = await task.findAndCountAll({
-    include: worker,
-  });
-  console.log('number of tasks ', res.count);
-  for (const row of res.rows) {
-    console.log({
-      id: row.id,
-      job: row.job,
-      done: row.done,
-      worker: {
-        id: row.worker.id,
-        name: row.worker.name,
-      },
-    });
-  }
+const { count, rows } = await worker.findAndCountAll();
+return { count, rows };
 }
 
-async function main() {
-  await init();
-}
+
+
+
 
 module.exports = {
-  main,
+  init,
   writeData,
   readData,
-
+  removeData
 };
