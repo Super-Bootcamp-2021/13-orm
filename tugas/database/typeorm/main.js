@@ -21,7 +21,8 @@ function init() {
     // type: "sqlite",
     // database: path.resolve(__dirname, '../../../../sanbercode.db'),
     synchronize: true,
-    dropSchema: true,
+    dropSchema: false,
+    logging: true,
     timezone: 'Asia/Jakarta',
     entities: [TaskSchema, WorkerSchema],
   });

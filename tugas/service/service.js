@@ -2,12 +2,10 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const {
-  storeProfileService,
-  getValueService,
-  delValueService,
-  getValueByNameService,
-} = require('./working-service');
+  storeTaskService
+} = require('./task-service');
 
+function initServer(){
 const server = createServer(async (req, res) => {
   let method = req.method;
   // route service
@@ -54,7 +52,7 @@ const server = createServer(async (req, res) => {
       break;
     case uri.pathname === '/task':
       if (method === 'POST') {
-        //storeTaskService(req, res);
+        storeTaskService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -102,3 +100,7 @@ const PORT = 9999;
 server.listen(PORT, () => {
   stdout.write(`server listening on port ${PORT}\n`);
 });
+}
+module.exports = {
+  initServer,
+}
