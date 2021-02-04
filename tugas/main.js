@@ -1,3 +1,3 @@
-const server = require('./task/server-task');
+const server = require('./task/server');
 
 server.run();

@@ -1,6 +1,6 @@
 const ERROR_CREATE_DATA_INVALID = 'data pekerjaan tidak lengkap';
 const ERROR_TASK_NOT_FOUND = 'pekerjaan tidak ditemukan';
-const { main, updateDB } = require('./orm');
+const { main, updateDB } = require('./test-database');
 
 function create(data) {
   if (!data.job) {
@@ -27,7 +27,6 @@ function update(data) {
     cancel: data.cancel,
   };
 
-  console.log(task);
   updateDB(task);
   return task;
 }

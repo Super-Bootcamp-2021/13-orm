@@ -1,14 +1,10 @@
 /* eslint-disable no-unused-vars */
 const { Sequelize } = require('sequelize');
 const path = require('path');
-const { defineTask } = require('./task.shcema');
+const { defineTask } = require('./model');
 
 let task;
 
-/**
- * setup relation ship
- * @param {Sequelize} orm sequalize instance
- */
 // function setupRelationship(orm) {
 //   worker = defineWorker(orm);
 //   task = defineTask(orm);
@@ -30,8 +26,6 @@ async function init() {
   await orm.authenticate();
   //   setupRelationship(orm);
   task = defineTask(orm);
-  // await orm.drop({ cascade: true });
-  // await orm.sync({ force: true, alter: true });
 }
 
 async function writeData(data) {
@@ -42,24 +36,6 @@ async function writeData(data) {
     cancel: data.cancel,
   });
 }
-
-// async function readData() {
-//   const res = await task.findAndCountAll({
-//     include: worker,
-//   });
-//   console.log('number of tasks ', res.count);
-//   for (const row of res.rows) {
-//     console.log({
-//       id: row.id,
-//       job: row.job,
-//       done: row.done,
-//       worker: {
-//         id: row.worker.id,
-//         name: row.worker.name,
-//       },
-//     });
-//   }
-// }
 
 async function taskDone(data) {
   await task.update(
@@ -80,13 +56,11 @@ async function taskDone(data) {
 async function main(data) {
   await init();
   await writeData(data);
-  //   await readData();
 }
 
 async function updateDB(data) {
   await init();
   await taskDone(data);
-  //   await readData();
 }
 
 module.exports = {
