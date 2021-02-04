@@ -47,7 +47,7 @@ async function writeDataTask(data) {
 }
 
 
-async function removeData(data){
+async function removeDataTask(data){
 return task.findOne({ where: { id: data } });
 }
 
