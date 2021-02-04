@@ -23,57 +23,38 @@ async function init() {
   );
   await orm.authenticate();
   setupRelationship(orm);
-  await orm.drop({ cascade: true });
-  await orm.sync({ force: true });
 }
 
-async function writeData() {
-  const A = await worker.create({
-    name: 'a',
-    alamat: 'jl bla',
-    email: 'a.gmail.com',
-    telp: '0851258',
-    bio: 'aku adalah A',
-  });
-  const B = await worker.create({
-    name: 'b',
-    alamat: 'jl ini',
-    email: 'b.gmail.com',
-    telp: '123456',
-    bio: 'aku adalah B',
-  });
+async function writeData(data) {
+  await worker.create(data);
+}
 
-  await task.bulkCreate([
-    { assigneeId: A.id, job: 'makan' },
-    { assigneeId: B.id, job: 'minum' },
-    { assigneeId: A.id, job: 'belajar' },
-  ]);
+async function removeData(data) {
+  return worker.findOne({ where: { id: data } });
+}
+
+async function updateTask(data) {
+  const instance = task.findOne({ where: { id: data.id } });
+  instance.job = data.job;
+  await instance.save();
+}
+``;
+async function writeDataTask(data) {
+  await task.create(data);
+}
+
+async function removeDataTask(data) {
+  return task.findOne({ where: { id: data } });
 }
 
 async function readData() {
-  const res = await task.findAndCountAll({
-    include: worker,
-  });
-  console.log('number of tasks ', res.count);
-  for (const row of res.rows) {
-    console.log({
-      id: row.id,
-      job: row.job,
-      done: row.done,
-      worker: {
-        id: row.worker.id,
-        name: row.worker.name,
-      },
-    });
-  }
-}
-
-async function main() {
-  await init();
-  await writeData();
-  await readData();
+  const { count, rows } = await worker.findAndCountAll();
+  return { count, rows };
 }
 
 module.exports = {
-  main,
+  init,
+  writeData,
+  readData,
+  removeData,
 };

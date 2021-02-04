@@ -1,15 +1,28 @@
 const { createServer } = require('http');
+const { router } = require('router');
 const { stdout } = require('process');
 
-function serve() {
-  const server = createServer((req, res) => {
-    res.end();
+let server;
+
+function run() {
+  server = createServer((req, res) => {
+    router();
   });
 
+  // run server
   const PORT = 1979;
-  server.listen(PORT, (val) => {
-    stdout.pipe(`listening to PORT ${PORT}`);
+  server.listen(PORT, () => {
+    stdout.write(`🚀 server listening on port ${PORT}\n`);
   });
 }
 
-exports.serve = serve;
+/**
+ * stop server
+ */
+function stop() {
+  if (server) {
+    server.close();
+  }
+}
+
+module.exports = { run, stop };

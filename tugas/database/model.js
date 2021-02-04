@@ -8,7 +8,7 @@ function defineWorker(orm) {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      alamat: {
+      address: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
@@ -16,11 +16,15 @@ function defineWorker(orm) {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      telp: {
+      phone: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
       bio: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      photo: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
