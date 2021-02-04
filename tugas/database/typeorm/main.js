@@ -48,25 +48,14 @@ async function writeDataTaskDB(connection, obj) {
   await task.save(isiTask);
 }
 
-async function readData() {
-  const task = getConnection().getRepository('Task');
-  let jobs = await task.find({ relations: ['assignee'] });
-  for (const job of jobs) {
-    console.log(job);
-  }
-
-  jobs = await task
-    .createQueryBuilder('Task')
-    .leftJoinAndSelect('Task.assignee', 'assignee')
-    .getMany();
-  for (const job of jobs) {
-    console.log(job);
-  }
+async function readDataTaskDB(con) {
+  const task = con.getRepository('Task');
+  return task;
 }
 
 async function writeDataWorker(obj) {
   try {
-    const conn = await init();
+    const conn = getConnection();
     await writeDataWorkerDB(conn, obj);
     conn.close();
   } catch (err) {
@@ -77,8 +66,19 @@ async function writeDataWorker(obj) {
 }
 async function writeDataTask(obj) {
   try {
-    const conn = await init();
+    const conn = getConnection();
     await writeDataTaskDB(conn, obj);
+    conn.close();
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function readDataTask() {
+  try {
+    const conn = getConnection();
+    await readDataTaskDB(conn);
     conn.close();
   } catch (err) {
     console.error(err);
@@ -90,4 +90,6 @@ async function writeDataTask(obj) {
 module.exports = {
   writeDataWorker,
   writeDataTask,
+  init,
+  readDataTask,
 };
