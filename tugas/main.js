@@ -1,8 +1,14 @@
+const { main } = require('./database/main')
 const {run, stop} = require('./route/server')
 
-function main(){
-    connect()
+function serve(){
+    main();
     run()
+    
 }
 
-main()
+serve()
+
+
+
+
