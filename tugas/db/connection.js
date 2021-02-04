@@ -9,7 +9,7 @@ async function connection() {
     logging: false,
   });
   const orm = orm1;
-  await orm.authenticate();
+  // await orm.authenticate();
   //   await orm.drop({ cascade: true });
   //   await orm.sync({ force: true, alter: true });
   return orm;

@@ -1,25 +1,23 @@
 const { defineTask } = require('../migrations/task');
 const { connection } = require('../connection');
 
+// async function findAll() {
+//   const connect = await connection();
+//   let task = defineTask(connect);
+//   const res = await task.findAll();
+//   return res;
+// }
 
-async function readData() {
-    const connect = await connection();
-    let task = defineTask(connect);
-    const res = await task.findAll();
-    console.log('number of tasks ', res.count);
-    return res
-    // console.log(res[0].job)
-    // for (const row of res.rows) {
-    //     console.log({
-    //         id: row.id,
-    //         job: row.job,
-    //         done: row.done,
-    //         worker: {
-    //             id: row.worker.id,
-    //             name: row.worker.name,
-    //         },
-    //     });
-    // }
+// async function create(data){
+//     const connect = await connection();
+//     let task = defineTask(connect);
+//     const res = await task.create(data);
+//     return res;
+// }
+
+// module.exports = {findAll, create};
+module.exports = async () => {
+      const connect = await connection();
+      let task = defineTask(connect);
+      return task
 }
-
-module.exports = {readData}
