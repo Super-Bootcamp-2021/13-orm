@@ -27,7 +27,7 @@ function init() {
   });
 }
 
-async function writeData(connection, obj) {
+async function writeDataWorkerDB(connection, obj) {
   const worker = connection.getRepository('Worker');
 
   const isiWorker = new Worker(
@@ -36,21 +36,16 @@ async function writeData(connection, obj) {
     obj.profile,
     obj.email,
     obj.nohp,
-    obj.biografi
+    obj.biografi,
+    obj.photo
   );
   await worker.save(isiWorker);
-  // const budi = worker.create({ name: 'budi' });
-  // const susi = worker.create({ name: 'susi' });
-  // await worker.save([budi, susi]);
+}
 
-  // const task = connection.getRepository('Task');
-  // const t1 = new Task(null, 'makan', budi);
-  // await task.save(t1);
-
-  // await task.save([
-  //   { job: 'minum', assignee: susi },
-  //   { job: 'belajar', assignee: { id: budi.id } },
-  // ]);
+async function writeDataTaskDB(connection, obj) {
+  const task = connection.getRepository('Task');
+  const isiTask = new Task(null, obj.job, obj.detail, obj.attach, obj.assignee);
+  await task.save(isiTask);
 }
 
 async function readData() {
@@ -72,14 +67,18 @@ async function readData() {
 async function writeDataWorker(obj) {
   try {
     const conn = await init();
-    await writeData(
-      conn,
-      obj.name,
-      obj.profile,
-      obj.email,
-      obj.nohp,
-      obj.biografi
-    );
+    await writeDataWorkerDB(conn, obj);
+    conn.close();
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function writeDataTask(obj) {
+  try {
+    const conn = await init();
+    await writeDataTaskDB(conn, obj);
     conn.close();
   } catch (err) {
     console.error(err);
@@ -90,4 +89,5 @@ async function writeDataWorker(obj) {
 
 module.exports = {
   writeDataWorker,
+  writeDataTask,
 };

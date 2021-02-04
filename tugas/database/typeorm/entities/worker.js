@@ -1,13 +1,15 @@
 const { EntitySchema } = require('typeorm');
 
 class Worker {
-  constructor(id, name, profile, email, nohp, biografi) {
+  constructor(id, name, profile, email, nohp, biografi, photo) {
     this.id = id;
     this.name = name;
     this.profile = profile;
     this.email = email;
     this.nohp = nohp;
     this.biografi = biografi;
+    this.photo = photo;
+
   }
 }
 
@@ -38,6 +40,10 @@ const WorkerSchema = new EntitySchema({
       length: 255,
     },
     biografi: {
+      type: 'varchar',
+      length: 255,
+    },
+    photo: {
       type: 'varchar',
       length: 255,
     },
