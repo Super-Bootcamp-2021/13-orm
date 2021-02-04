@@ -12,43 +12,43 @@ class Task {
 }
 
 const TaskSchema = new EntitySchema({
-    name: 'Task',
-    tableName: 'tasks',
-    target: Task,
-    columns: {
-        id: {
-            type: 'int',
-            primary: true,
-            generated: true,
-        },
-        job: {
-            type: 'text',
-        },
-        done: {
-            type: 'boolean',
-            default: false,
-        },
-        cancel: {
-            type: 'boolean',
-            default: false,
-        },
-        addedAt: {
-            type: 'timestamp',
-            name: 'added_at',
-            nullable: false,
-            default: () => 'NOW()',
-        },
+  name: 'Task',
+  tableName: 'tasks',
+  target: Task,
+  columns: {
+    id: {
+      type: 'int',
+      primary: true,
+      generated: true,
     },
-    relations: {
-        assignee: {
-            target: 'Worker',
-            type: 'many-to-one',
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE',
-        },
+    job: {
+      type: 'text',
     },
+    done: {
+      type: 'boolean',
+      default: false,
+    },
+    cancel: {
+      type: 'boolean',
+      default: false,
+    },
+    addedAt: {
+      type: 'timestamp',
+      name: 'added_at',
+      nullable: false,
+      default: () => 'NOW()',
+    },
+  },
+  relations: {
+    assignee: {
+      target: 'Worker',
+      type: 'many-to-one',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  },
 });
 module.exports = {
-    Task,
-    TaskSchema,
+  Task,
+  TaskSchema,
 };

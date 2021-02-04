@@ -2,15 +2,15 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const {
-  postService,
+  writeWorkerService,
   readWorkerService,
-  deleteService,
+  deleteWorkerService,
 } = require('../service/worker-service/worker-service');
 const {
   addTaskService,
-  finishService,
-  cancelService,
-  readService,
+  finishTaskService,
+  cancelTaskService,
+  readTaskService,
 } = require('../service/task-service/task-service');
 
 const server = createServer((req, res) => {
@@ -25,9 +25,9 @@ const server = createServer((req, res) => {
     res.end();
   };
   switch (true) {
-    case uri.pathname === '/pekerja/store':
+    case uri.pathname === '/pekerja/add':
       if (method === 'POST') {
-        postService(req, res);
+        writeWorkerService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -43,7 +43,7 @@ const server = createServer((req, res) => {
       break;
     case /^\/pekerja\/delete\/\w+/.test(uri.pathname):
       if (method === 'DELETE') {
-        deleteService(req, res);
+        deleteWorkerService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -59,7 +59,7 @@ const server = createServer((req, res) => {
       break;
     case uri.pathname === '/pekerjaan/finish':
       if (method === 'POST') {
-        finishService(req, res);
+        finishTaskService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -67,15 +67,15 @@ const server = createServer((req, res) => {
       break;
     case uri.pathname === '/pekerjaan/cancel':
       if (method === 'POST') {
-        cancelService(req, res);
+        cancelTaskService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
       }
       break;
-    case uri.pathname === '/pekerjaan/read':
+    case uri.pathname === '/pekerjaan/list':
       if (method === 'GET') {
-        readService(req, res);
+        readTaskService(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();

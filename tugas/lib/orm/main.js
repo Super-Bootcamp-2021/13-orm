@@ -1,89 +1,77 @@
 /* eslint-disable no-unused-vars */
 const { getConnection, createConnection } = require('typeorm');
-const { TaskSchema, Task } = require('./entities/task-model');
+const { TaskSchema } = require('./entities/task-model');
 const { WorkerSchema } = require('./entities/worker-model');
-const path = require('path');
+
+let conn;
 
 function init() {
-    return createConnection({
-        type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: '',
-        database: 'sanbercode',
-        // type: 'postgres',
-        // host: 'localhost',
-        // port: 5432,
-        // username: 'postgres',
-        // password: 'postgres',
-        // database: 'sanbercode2',
-        // type: "sqlite",
-        // database: path.resolve(__dirname, '../../../../sanbercode.db'),
-        synchronize: true,
-        // dropSchema: true,
-        timezone: 'Asia/Jakarta',
-        entities: [TaskSchema, WorkerSchema],
-    });
+  return createConnection({
+    type: 'mysql',
+    host: 'localhost',
+    port: 3306,
+    username: 'root',
+    password: '',
+    database: 'sanbercode',
+    synchronize: true,
+    timezone: 'Asia/Jakarta',
+    entities: [TaskSchema, WorkerSchema],
+  });
 }
 
 async function writeWorker(data) {
-    const conn = await init();
-    const worker = conn.getRepository('Worker');
-    const create = worker.create(data);
-    await worker.save(create);
-
-    conn.close();
+  const worker = getConnection().getRepository('Worker');
+  const create = worker.create(data);
+  await worker.save(create);
 }
 
 async function writeTask(data) {
-    const conn = await init();
-    const task = conn.getRepository('Task');
-    const create = task.create(data);
-    await task.save(create);
-
-    conn.close();
+  const task = getConnection().getRepository('Task');
+  const create = task.create(data);
+  await task.save(create);
 }
 
 async function readTask() {
-  const conn = await init();
-  const task = conn.getRepository('Task');
+  const task = getConnection().getRepository('Task');
   let jobs = await task.find({ relations: ['assignee'] });
-  conn.close();
   return JSON.stringify(jobs);
 }
 
 async function readWorker() {
-  const conn = await init();
-  const worker = conn.getRepository('Worker');
+  const worker = getConnection().getRepository('Worker');
   let workers = await worker.find();
-  conn.close();
   return JSON.stringify(workers);
 }
 
 async function deleteWorker(id) {
-  const conn = await init();
-  await conn
+  await getConnection()
     .createQueryBuilder()
     .delete()
     .from('Worker')
     .where(' id = :id', { id })
     .execute();
-  conn.close();
 }
 
 async function updateTask(data, id) {
-  const conn = await init();
-  await conn
+  await getConnection()
     .createQueryBuilder()
     .update('Task')
     .set(data)
     .where(' id = :id', { id })
     .execute();
+}
+
+async function connect() {
+  conn = await init();
+}
+
+async function close() {
   conn.close();
 }
 
 module.exports = {
+  connect,
+  close,
   writeWorker,
   writeTask,
   readTask,

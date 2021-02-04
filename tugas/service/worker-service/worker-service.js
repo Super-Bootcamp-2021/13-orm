@@ -2,9 +2,9 @@ const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
 const { saveFile } = require('../../lib/storage');
-const { writeWorker } = require('../../lib/orm/main');
+const { writeWorker, readWorker, deleteWorker } = require('../../lib/orm/main');
 
-async function postService(req, res) {
+async function writeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   let obj = {};
 
@@ -21,8 +21,8 @@ async function postService(req, res) {
       case 'photo':
         {
           try {
-            const attachment = await saveFile(file, mimetype, fieldname);
-            obj[`${fieldname}`] = attachment;
+            const photo = await saveFile(file, mimetype, fieldname);
+            obj[`${fieldname}`] = photo;
           } catch (err) {
             abort();
           }
@@ -42,12 +42,10 @@ async function postService(req, res) {
   busboy.on('field', async (fieldname, val) => {
     obj[`${fieldname}`] = val;
   });
+
   busboy.on('finish', async () => {
-    // data.data.push(obj);
     await writeWorker(obj);
-    console.log(obj);
-    // await setData('data', JSON.stringify(data));
-    console.log('data berhasil disimpan');
+    res.write('data pekerja berhasil disimpan.');
     res.end();
   });
 
@@ -58,36 +56,30 @@ async function postService(req, res) {
 }
 
 async function readWorkerService(req, res) {
-  // const data = await getData('data');
+  const data = await readWorker();
   res.setHeader('Content-Type', 'application/json');
-  // res.write(data);
+  res.write(data);
   res.statusCode = 200;
   res.end();
 }
 
-async function deleteService(req, res) {
+async function deleteWorkerService(req, res) {
   const uri = url.parse(req.url, true);
-  // const data = JSON.parse(await getData('data'));
-  const name = uri.pathname.replace('/pekerja/delete/', '');
-  if (!name) {
+  const id = uri.pathname.replace('/pekerja/delete/', '');
+  if (!id) {
     res.statusCode = 400;
     res.write('request tidak sesuai');
     res.end();
   }
 
-  // for (let i = 0; i < data.data.length; i++) {
-  //   if (data.data[i].nama === name) {
-  //     data.data.splice(i, 1);
-  //   }
-  // }
-
-  // await setData('data', JSON.stringify(data));
+  await deleteWorker(id);
+  res.write(`data pekerja dengan id ${id} telah dihapus.`);
   res.statusCode = 200;
   res.end();
 }
 
 module.exports = {
-  postService,
+  writeWorkerService,
   readWorkerService,
-  deleteService,
+  deleteWorkerService,
 };
