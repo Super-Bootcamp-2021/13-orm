@@ -56,10 +56,8 @@ async function writeData() {
 }
 
 async function readData() {
-  const res = await task.findAndCountAll({
-    include: worker,
-  });
-  console.log('number of tasks ', res.count);
+  const res = await worker.find();
+  console.log('number of tasks', res.count);
   for (const row of res.rows) {
     console.log({
       id: row.id,
@@ -71,6 +69,10 @@ async function readData() {
       },
     });
   }
+}
+
+async function readAll(){
+  const r
 }
 
 async function main() {
