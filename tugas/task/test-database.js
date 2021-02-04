@@ -80,7 +80,7 @@ function doneTask(data) {
   });
 }
 
-doneTask({ id: 4, done: false })
+//doneTask({ id: 4, done: false })
 module.exports = {
   createTask,
   updateTask,
