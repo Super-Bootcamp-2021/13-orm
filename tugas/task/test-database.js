@@ -1,107 +1,89 @@
-/* eslint-disable no-unused-vars */
-const { Sequelize } = require('sequelize');
-const path = require('path');
-const { defineTask } = require('./model');
+const http = require("http");
 
-let task;
+const PORT = 6000;
 
-// function setupRelationship(orm) {
-//   worker = defineWorker(orm);
-//   task = defineTask(orm);
-
-//   task.belongsTo(worker, {
-//     onDelete: 'cascade',
-//     foreignKey: 'assigneeId',
-//   });
-// }
-
-async function init() {
-  const orm1 = new Sequelize('sanbercode2', 'root', '', {
-    host: 'localhost',
-    port: 3306,
-    dialect: 'mariadb',
-    logging: false,
-  });
-  const orm = orm1;
-  await orm.authenticate();
-  //   setupRelationship(orm);
-  task = defineTask(orm);
-}
-
-async function writeData(data) {
-  await task.create({
-    job: data.job,
-    attachment: data.attachment,
-    done: data.done,
-    cancel: data.cancel,
+function createTask(data) {  
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
   });
 }
 
-async function updateTask(data) {
-  await task.update(
-    {
-      job: data.job,
-      attachment: data.attachment,
-      done: data.done,
-      cancel: data.cancel,
-    },
-    {
-      where: {
-        id: data.id,
-      },
-    }
-  );
+//createTask({assignee_id: 3, job: 'ngoding', attachment: 'file.jpg', done: true});
+
+function updateTask(data) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/update?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function taskDone(data) {
-  await task.update(
-    {
-      done: 1, //1 or true
-    },
-    {
-      where: {
-        id: data.id,
-      },
-    }
-  );
+//updateTask({id: 1, job: 'bermain', attachment: 'file.jpg', done: true});
+
+function cancelTask(id) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/delete?id=${id}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function taskCancel(data) {
-  await task.update(
-    {
-      cancel: 1, //1 or true
-    },
-    {
-      where: {
-        id: data.id,
-      },
-    }
-  );
+//cancelTask(4);
+
+function doneTask(data) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/done?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function main(data) {
-  await init();
-  await writeData(data);
-}
-
-async function updateDB(data) {
-  await init();
-  await updateTask(data);
-}
-
-async function doneDB(data) {
-  await init();
-  await taskDone(data);
-}
-
-async function cancelDB(data) {
-  await init();
-  await taskCancel(data);
-}
-
+doneTask({ id: 4, done: false })
 module.exports = {
-  main,
-  updateDB,
-  doneDB,
-  cancelDB,
-};
+  createTask,
+  updateTask,
+  cancelTask,
+  doneTask
+}
