@@ -33,7 +33,7 @@ async function writeDataWorkerDB(connection, obj) {
   const isiWorker = new Worker(
     null,
     obj.name,
-    obj.profile,
+    obj.address,
     obj.email,
     obj.nohp,
     obj.biografi,
