@@ -8,5 +8,5 @@ function defineWorkers(orm) {
 }
 
 module.exports = {
-    defineWorkers(),
+    defineWorkers,
 };

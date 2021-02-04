@@ -1,17 +1,6 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
-const { defineTask } = require('./model');
-const { setupRelationship } = require('../relationship/relationship');
-
-//initialize database
-async function init() {
-    const con = new Sequelize('', '', '', {
-        host: '',
-        port: ,
-        dialect: '',
-        logging: ,
-    });
-}
+const { init } = require('../relationship/relationship');
 
 //store function
 async function storeData() {
@@ -23,12 +12,12 @@ async function readData() {
 
 }
 
-async function main() {
+async function mainTasks() {
     await init();
     await storeData();
     await readData();
 }
 
 module.exports = {
-    main()
+    mainTasks,
 };
