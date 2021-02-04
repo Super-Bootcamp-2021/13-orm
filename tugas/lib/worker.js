@@ -1,16 +1,16 @@
-// model worker here
+const {writeData} = require('../db/models/worker.model');
 
-
-function register(data){
+async function register(data){
     try {
-        const worker = {        
+        const worker = {        // anggap bentuk data yang diperoleh dari model
             name: data.name,
             address: data.address,
             email: data.email,
             phone: data.phone,
-            biografi: data.bio,
+            biografi: data.biografi,
             photo: data.photo,
         }
+        await writeData(worker);
         return;
     } catch (error) {
         throw error

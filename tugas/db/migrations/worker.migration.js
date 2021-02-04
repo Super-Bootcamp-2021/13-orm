@@ -10,6 +10,26 @@ function defineWorker(orm) {
           type: DataTypes.STRING(255),
           allowNull: false,
         },
+        address: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        email: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        phone: {
+          type: DataTypes.STRING(15),
+          allowNull: false,
+        },
+        biografi: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
+        photo: {
+          type: DataTypes.STRING(255),
+          allowNull: false,
+        },
       },
       {
         timestamps: false,

@@ -8,13 +8,12 @@ const { register, listWorker, removeWorker } = require('../lib/worker');
 function saveWorker(req, res) {
     const busboy = new Busboy({ headers: req.headers })
 
-    let data = {        // set bentuk data agar ketika di get tidak otomatis diurutkan berdasarkan key
+    let data = {        
         name: '',
         address: '',
         email: '',
         phone: '',
         biografi: '',
-        deleted: false,
     }
 
     let finished = false;
@@ -35,7 +34,7 @@ function saveWorker(req, res) {
             case 'photo':
                 try {
                   const folder = 'photo';
-                  data.photo = await saveFile(file, mimetype,folder);
+                  data.photo = "localhost:9999/photo/"+await saveFile(file, mimetype,folder);
                 } catch (err) {
                   abort();
                 }

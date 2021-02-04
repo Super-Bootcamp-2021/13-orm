@@ -1,15 +1,14 @@
-const {startConnection, getConnection} = require('../connection');
+const {connection} = require('../connection');
 const {defineWorker} = require('./worker.migration');
 
 
 
 async function migrate(){
-    await startConnection();
-    const connect = getConnection();
-    const worker = defineWorker(connect);
+    await connection.authenticate();
+    const worker = defineWorker(connection);
     //add task
 
-    connect.sync({force: true});
+    connection.sync({force: true});
 }
 
 migrate();
