@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const { getConnection, createConnection } = require('typeorm');
 const { TaskSchema, Task } = require('./entities/task');
-const { WorkerSchema } = require('./entities/worker');
+const { WorkerSchema, Worker } = require('./entities/worker');
 const path = require('path');
 
 function init() {
@@ -10,8 +10,8 @@ function init() {
     host: 'localhost',
     port: 3306,
     username: 'root',
-    password: 'hasan132',
-    database: 'sanbercode2',
+    password: '',
+    database: 'sanbercode',
     // type: 'postgres',
     // host: 'localhost',
     // port: 5432,
@@ -27,20 +27,25 @@ function init() {
   });
 }
 
-async function writeData(connection) {
+async function writeDataWorkerDB(connection, obj) {
   const worker = connection.getRepository('Worker');
-  const budi = worker.create({ name: 'budi' });
-  const susi = worker.create({ name: 'susi' });
-  await worker.save([budi, susi]);
 
+  const isiWorker = new Worker(
+    null,
+    obj.name,
+    obj.profile,
+    obj.email,
+    obj.nohp,
+    obj.biografi,
+    obj.photo
+  );
+  await worker.save(isiWorker);
+}
+
+async function writeDataTaskDB(connection, obj) {
   const task = connection.getRepository('Task');
-  const t1 = new Task(null, 'makan', budi);
-  await task.save(t1);
-
-  await task.save([
-    { job: 'minum', assignee: susi },
-    { job: 'belajar', assignee: { id: budi.id } },
-  ]);
+  const isiTask = new Task(null, obj.job, obj.detail, obj.attach, obj.assignee);
+  await task.save(isiTask);
 }
 
 async function readData() {
@@ -59,14 +64,30 @@ async function readData() {
   }
 }
 
-async function main() {
-  const conn = await init();
-  await writeData(conn);
-  await readData();
-  conn.close();
+async function writeDataWorker(obj) {
+  try {
+    const conn = await init();
+    await writeDataWorkerDB(conn, obj);
+    conn.close();
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function writeDataTask(obj) {
+  try {
+    const conn = await init();
+    await writeDataTaskDB(conn, obj);
+    conn.close();
+  } catch (err) {
+    console.error(err);
+  }
+
   // getConnection().close();
 }
 
 module.exports = {
-  main,
+  writeDataWorker,
+  writeDataTask,
 };
