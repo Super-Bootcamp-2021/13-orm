@@ -61,9 +61,21 @@ async function readWorker() {
   return JSON.stringify(workers);
 }
 
+async function deleteWorker(id) {
+  const conn = await init();
+  await conn
+    .createQueryBuilder()
+    .delete()
+    .from('Worker')
+    .where(' id = :id', { id })
+    .execute();
+  conn.close();
+}
+
 module.exports = {
   writeWorker,
   writeTask,
   readTask,
   readWorker,
+  deleteWorker,
 };
