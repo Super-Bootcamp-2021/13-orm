@@ -1,7 +1,7 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../../lib/storage');
-const { writeTask } = require('../../lib/orm/main');
+const { writeTask, updateTask } = require('../../lib/orm/main');
 
 async function addTaskService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -88,6 +88,7 @@ async function finishService(req, res) {
     //   }
     // }
     // await setData('data-pekerjaan', JSON.stringify(data));
+    await updateTask({ done: true }, 2);
     res.statusCode = 200;
     res.write(`pekerjaan ${name} berhasil diselesaikan`);
     res.end();
@@ -116,6 +117,7 @@ async function cancelService(req, res) {
   });
 
   busboy.on('finish', async () => {
+    await updateTask({ cancel: true }, 2);
     // const data = JSON.parse(await getData('data-pekerjaan'));
 
     // for (let i = 0; i < data.pekerjaan.length; i++) {

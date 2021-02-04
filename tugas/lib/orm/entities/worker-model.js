@@ -45,7 +45,7 @@ const WorkerSchema = new EntitySchema({
     photo: {
       type: 'varchar',
       length: 255,
-    }
+    },
   },
 });
 

@@ -72,10 +72,22 @@ async function deleteWorker(id) {
   conn.close();
 }
 
+async function updateTask(data, id) {
+  const conn = await init();
+  await conn
+    .createQueryBuilder()
+    .update('Task')
+    .set(data)
+    .where(' id = :id', { id })
+    .execute();
+  conn.close();
+}
+
 module.exports = {
   writeWorker,
   writeTask,
   readTask,
   readWorker,
   deleteWorker,
+  updateTask,
 };
