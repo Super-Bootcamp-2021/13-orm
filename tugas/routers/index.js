@@ -7,7 +7,7 @@ function main(req, res){
     const uri = url.parse(req.url, true);
 
     const respond = async () => {
-      res.statusCode = statusCode;
+      res.statusCode = 404;
       res.write(message);
       res.end();
     };

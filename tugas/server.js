@@ -11,3 +11,5 @@ const PORT = 9999;
 server.listen(PORT, () => {
   stdout.write(`server listening on port ${PORT}\n`);
 });
+
+module.exports = server
