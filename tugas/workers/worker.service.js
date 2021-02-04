@@ -16,11 +16,11 @@ function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
 
   const data = {
-		name: '',
+    name: '',
     address: '',
-		email: '',
+    email: '',
     telephone: '',
-		biography: '',
+    biography: '',
     photo: '',
   };
 
@@ -68,9 +68,11 @@ function registerSvc(req, res) {
       }
     }
   });
-	
+
   busboy.on('field', (fieldname, val) => {
-    if (['name', 'address', 'email', 'telephone', 'biography'].includes(fieldname)) {
+    if (
+      ['name', 'address', 'email', 'telephone', 'biography'].includes(fieldname)
+    ) {
       data[fieldname] = val;
     }
   });

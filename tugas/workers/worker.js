@@ -4,15 +4,22 @@ const ERROR_REGISTER_DATA_INVALID = 'data registrasi pekerja tidak lengkap';
 const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
 
 async function register(data) {
-  if (!data.name || !data.email || !data.telephone || !data.biography || !data.address || !data.photo) {
+  if (
+    !data.name ||
+    !data.email ||
+    !data.telephone ||
+    !data.biography ||
+    !data.address ||
+    !data.photo
+  ) {
     throw ERROR_REGISTER_DATA_INVALID;
   }
   const worker = {
     name: data.name,
     address: data.address,
-		email: data.email,
+    email: data.email,
     telephone: data.telephone,
-		biography: data.biography,
+    biography: data.biography,
     photo: data.photo,
   };
   await write('worker', worker);
