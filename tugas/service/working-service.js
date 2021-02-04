@@ -1,15 +1,35 @@
-const fs = require('fs');
-const path = require('path');
-const mime = require('mime-types');
 const Busboy = require('busboy');
 const url = require('url');
-const { setValueToDb, setWorker, getValue, getValueByName, delValueWorker } = require('../kv/redis');
 const { Writable } = require('stream');
+const {
+  register,
+  //list,
+  //remove,
+  ERROR_REGISTER_DATA_INVALID,
+  ERROR_WORKER_NOT_FOUND,
+} = require('./worker');
 const { upload } = require('../database/typeorm/storage');
+// eslint-disable-next-line no-unused-vars
+const { IncomingMessage, ServerResponse } = require('http');
 
-function storeProfileService(req, res) {
-  let worker = {};
+/**
+ * service to register new worker
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ */
+function registerSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
+
+  const data = {
+    name: '',
+    email: '',
+    biografi: '',
+    address: '',
+    nohp: '',
+    photo: '',
+  };
+
+  let finished = false;
 
   function abort() {
     req.unpipe(busboy);
@@ -18,17 +38,50 @@ function storeProfileService(req, res) {
       res.end();
     }
   }
-  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-    upload(worker, fieldname, file, mimetype, abort)
+
+  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
+    switch (fieldname) {
+      case 'photo':
+        try {
+          data.photo = await supload(file, mimetype);
+        } catch (err) {
+          abort();
+        }
+        if (finished) {
+          try {
+            const worker = await register(data);
+            res.setHeader('content-type', 'application/json');
+            res.write(JSON.stringify(worker));
+          } catch (err) {
+            if (err === ERROR_REGISTER_DATA_INVALID) {
+              res.statusCode = 401;
+            } else {
+              res.statusCode = 500;
+            }
+            res.write(err);
+          }
+          res.end();
+        }
+        break;
+      default: {
+        const noop = new Writable({
+          write(chunk, encding, callback) {
+            setImmediate(callback);
+          },
+        });
+        file.pipe(noop);
+      }
+    }
   });
+
   busboy.on('field', (fieldname, val) => {
-    worker[fieldname] = val;
+    if (['name', 'email', 'biografi', 'nohp', 'address'].includes(fieldname)) {
+      data[fieldname] = val;
+    }
   });
+
   busboy.on('finish', async () => {
-    await setWorker(worker);
-    await setValueToDb();
-    res.write('data berhasil di tambahkan');
-    res.end();
+    finished = true;
   });
 
   req.on('aborted', abort);
@@ -37,54 +90,59 @@ function storeProfileService(req, res) {
   req.pipe(busboy);
 }
 
-async function getValueByNameService(req, res) {
-  const uri = url.parse(req.url, true);
-  const filename = uri.pathname.replace('/find/', '');
-  if (!filename) {
-    res.statusCode = 400;
-    res.write('request tidak sesuai');
+/**
+ * service to get list of workers
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ */
+async function listSvc(req, res) {
+  try {
+    const workers = await list();
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(workers));
     res.end();
+  } catch (err) {
+    res.statusCode = 500;
+    res.end();
+    return;
   }
-  const value = await getValueByName(filename);
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value);
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
 }
 
-async function getValueService(req, res) {
-  const value = await getValue();
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value.worker);
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
-}
-async function delValueService(req, res) {
+/**
+ * service to remove a worker by it's id
+ * @param {IncomingMessage} req
+ * @param {ServerResponse} res
+ */
+async function removeSvc(req, res) {
   const uri = url.parse(req.url, true);
-  const filename = uri.pathname.replace('/del/', '');
-  if (!filename) {
-    res.statusCode = 400;
-    res.write('request tidak sesuai');
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
     res.end();
+    return;
   }
-  const value = await delValueWorker(filename);
-  await setValueToDb();
-  if (!value) {
-    res.statusCode = 404;
-    res.write('data tidak ditemukan');
+  try {
+    const worker = await remove(id);
+    res.setHeader('content-type', 'application/json');
+    res.statusCode = 200;
+    res.write(JSON.stringify(worker));
     res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
   }
-  res.setHeader('Content-Type', 'application/json');
-  res.statusCode = 200;
-  res.write(value);
-  res.end();
 }
 
 module.exports = {
-  storeProfileService,
-  getValueService,
-  delValueService,
-  getValueByNameService,
+  listSvc,
+  registerSvc,
+  removeSvc,
 };

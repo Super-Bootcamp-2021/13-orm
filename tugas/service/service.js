@@ -22,7 +22,7 @@ const server = createServer(async (req, res) => {
   switch (true) {
     case uri.pathname === '/store':
       if (method === 'POST') {
-        storeProfileService(req, res);
+        registerSvc(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -30,7 +30,7 @@ const server = createServer(async (req, res) => {
       break;
     case uri.pathname === '/getallworker':
       if (method === 'POST') {
-        getValueService(req, res);
+        listSvc(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
@@ -46,7 +46,7 @@ const server = createServer(async (req, res) => {
       break;
     case /^\/del\/\w+/.test(uri.pathname):
       if (method === 'GET') {
-        delValueService(req, res);
+        removeSvc(req, res);
       } else {
         message = 'Method tidak tersedia';
         respond();
