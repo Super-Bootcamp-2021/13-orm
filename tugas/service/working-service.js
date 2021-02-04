@@ -3,7 +3,6 @@ const path = require('path');
 const mime = require('mime-types');
 const Busboy = require('busboy');
 const url = require('url');
-const { setValueToDb, setWorker, getValue, getValueByName, delValueWorker } = require('../kv/redis');
 const { Writable } = require('stream');
 const { upload } = require('../database/typeorm/storage');
 
