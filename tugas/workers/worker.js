@@ -1,4 +1,4 @@
-const { read, save, del } = require('../lib/relationship');
+const { read, write, del } = require('../lib/relationship');
 
 const ERROR_REGISTER_DATA_INVALID = 'data registrasi pekerja tidak lengkap';
 const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
@@ -15,7 +15,7 @@ async function register(data) {
 		biography: data.biography,
     photo: data.photo,
   };
-  await save('worker', worker);
+  await write('worker', worker);
   return worker;
 }
 
@@ -27,11 +27,6 @@ async function list() {
   return workers;
 }
 
-/**
- * remove a worker by an id
- * @param {string} id worker id
- * @returns {Promise<Worker>} removed worker
- */
 async function remove(id) {
   let workers = await read('worker');
   if (!workers) {
