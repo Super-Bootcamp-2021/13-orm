@@ -44,10 +44,10 @@ async function writeData(req, res) {
     res.setHeader('Method', 'POST');
     res.statusCode = 200;
     res.write(hasil);
-
+    res.end();
     await task.save({ job, desc });
   });
-  await task.save({ job, desc });
+  //   await task.save({ job, desc });
 }
 
 async function readData(req, res) {
@@ -62,13 +62,15 @@ async function readData(req, res) {
 }
 
 async function main(req, res) {
-  const conn = await init();
+  //   const conn = await init();
   await writeData(req, res);
   //   await readData(req, res);
-  conn.close();
+  //   conn.close();
   // getConnection().close();
 }
 
 module.exports = {
   main,
+  init,
+  writeData,
 };
