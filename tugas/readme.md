@@ -2,6 +2,8 @@
 
 buat system manajemen task yang terdiri dari 2 web service
 
+![service diagram](tugas-besar-task-orm.png)
+
 1. workers service
     menyediakan informasi mengenai pekerja
     - menyimpan profil pekerja, nama, alamat, email, no-telp, biografi singkat
