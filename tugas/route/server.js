@@ -1,7 +1,6 @@
 const { createServer } = require('http');
 const { stdout } = require('process');
-const taskServices = require('../services/task.service');
-const workerServices = require('../services/worker.service');
+const {router} = require('./router');
 /**
  * run server
  */
@@ -9,8 +8,7 @@ let server;
 
 function run() {
   server = createServer((req, res) => {
-    taskServices(req, res);
-    workerServices(req, res);
+    router(req, res);
   });
 
   // run server

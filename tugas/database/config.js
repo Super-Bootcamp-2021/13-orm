@@ -6,7 +6,7 @@ const CONFIG = {
     logging: false,
   },
   DATABASE: 'erbium',
-  PASSWORD: '24oktober1999',
+  PASSWORD: 'stratosfer10110100',
   USERNAME: 'postgres',
 };
 

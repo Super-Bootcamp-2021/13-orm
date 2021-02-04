@@ -1,14 +1,9 @@
-const { main } = require('./database/main')
-const {run, stop} = require('./route/server')
+const { main } = require('./database/main');
+const { run } = require('./route/server');
 
-function serve(){
-    main();
-    run()
-    
+function serve() {
+  main();
+  run();
 }
 
-serve()
-
-
-
-
+serve();
