@@ -1,4 +1,4 @@
-const { init } = require('./database/main');
+const { init } = require('./database/orm');
 const server = require('./route/server');
 
 async function serve() {

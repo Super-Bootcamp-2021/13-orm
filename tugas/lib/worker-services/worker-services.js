@@ -3,7 +3,7 @@ const {
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('../../route/utils');
-const { writeData, readData, removeData } = require('../../database/main');
+const { writeData, readData, removeData } = require('../../database/orm');
 const { saveFile } = require('../../database/storage');
 const { Writable } = require('stream');
 const url = require('url');
@@ -44,12 +44,12 @@ function addWorker(req, res) {
             res.setHeader('content-type', 'application/json');
             res.write(JSON.stringify(data));
           } catch (err) {
-            // if (err === ERROR_REGISTER_DATA_INVALID) {
-            //   res.statusCode = 401;
-            // } else {
-            //   res.statusCode = 500;
-            // }
-            // res.write(err);
+            if (err === ERROR_REGISTER_DATA_INVALID) {
+              res.statusCode = 401;
+            } else {
+              res.statusCode = 500;
+            }
+            res.write(err);
           }
           res.end();
         }

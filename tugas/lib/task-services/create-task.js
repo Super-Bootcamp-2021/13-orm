@@ -1,18 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
+const { writeData, readData, removeData } = require('../../database/orm');
 const Busboy = require('busboy');
+const { saveFile } = require('../../database/storage');
 const { Writeable } = require('stream');
 
-function randomFileName(mimetype) {
-  return (
-    new Date().getTime() +
-    '-' +
-    Math.round(Math.random() * 1000) +
-    '.' +
-    mime.extension(mimetype)
-  );
-}
 
 function addTask(req, res) {
   const busboy = new Busboy({ headers: req.headers });
