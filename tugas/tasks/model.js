@@ -5,7 +5,7 @@ const { Sequelize, Model } = require('sequelize');
 
 //variables that attached to the "tasks"
 function defineTask(orm) {
-	return orm.define(
+  return orm.define(
     'task',
     {
       job: DataTypes.TEXT,
@@ -27,5 +27,5 @@ function defineTask(orm) {
 }
 
 module.exports = {
-    defineTask,
+  defineTask,
 };
