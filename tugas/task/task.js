@@ -2,7 +2,7 @@ const ERROR_CREATE_DATA_INVALID = 'data pekerjaan tidak lengkap';
 const ERROR_TASK_NOT_FOUND = 'pekerjaan tidak ditemukan';
 const { main, updateDB, doneDB, cancelDB } = require('./test-database');
 
-function create(data) {
+async function create(data) {
   if (!data.job) {
     throw ERROR_CREATE_DATA_INVALID;
   }
@@ -14,11 +14,11 @@ function create(data) {
     cancel: data.cancel,
   };
 
-  main(task);
+  await main(task);
   return task;
 }
 
-function update(data) {
+async function update(data) {
   const task = {
     id: data.id,
     job: data.job,
@@ -27,25 +27,25 @@ function update(data) {
     cancel: data.cancel,
   };
 
-  updateDB(task);
+  await updateDB(task);
   return task;
 }
 
-function done(id) {
+async function done(id) {
   const task = {
     id: id,
   };
 
-  doneDB(task);
+  await doneDB(task);
   return task;
 }
 
-function cancel(id) {
+async function cancel(id) {
   const task = {
     id: id,
   };
 
-  cancelDB(task);
+  await cancelDB(task);
   return task;
 }
 

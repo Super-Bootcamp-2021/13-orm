@@ -20,7 +20,72 @@ function createTask(data) {
   });
 }
 
+async function init() {
+  const orm1 = new Sequelize('sanbercode2', 'root', '', {
+    host: 'localhost',
+    port: 3306,
+    dialect: 'mariadb',
+    logging: false,
+  });
+  const orm = orm1;
+  await orm.authenticate();
+  //   setupRelationship(orm);
+  task = defineTask(orm);
+  await orm.sync();
+}
 //createTask({assignee_id: 3, job: 'ngoding', attachment: 'file.jpg', done: true});
+
+
+async function updateTask(data) {
+  await task.update(
+    {
+      job: data.job,
+      attachment: data.attachment,
+      done: data.done,
+      cancel: data.cancel,
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
+}
+
+async function readData(id) {
+  const taskdb = await task.findAll({
+    where: {
+      id: id,
+    },
+  });
+
+  return taskdb;
+}
+
+async function taskDone(data) {
+  await task.update(
+    {
+      done: 1, //1 or true
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
+}
+
+async function taskCancel(data) {
+  await task.update(
+    {
+      cancel: 1, //1 or true
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
 
 function updateTask(data) {
   return new Promise((resolve, reject) => {
@@ -80,10 +145,28 @@ function doneTask(data) {
   });
 }
 
-//doneTask({ id: 4, done: false })
+
+async function dropTable() {
+  await init();
+  await task.drop();
+}
+
+async function read(id) {
+  await init();
+  const taskr = await readData(id);
+  return taskr[0].dataValues;
+}
+
 module.exports = {
+  main,
+  updateDB,
+  doneDB,
+  cancelDB,
+  init,
+  dropTable,
+  read,
   createTask,
   updateTask,
   cancelTask,
-  doneTask
+  doneTask,
 }
