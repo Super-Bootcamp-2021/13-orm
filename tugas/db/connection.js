@@ -1,13 +1,18 @@
-const { Client, Pool } = require('pg');
+const { Sequelize } = require('sequelize');
+// const {} = require('../db/migrations/task')
 
-const pool = new Pool({
-    host: '127.0.0.1',
+async function connection() {
+  const orm1 = new Sequelize('sanbercode1', 'testing', '', {
+    host: 'localhost',
     port: 5432,
-    user: 'testing',
-    password: '',
-    database: 'sanbercode1',
-});
+    dialect: 'postgres',
+    logging: false,
+  });
+  const orm = orm1;
+  await orm.authenticate();
+  //   await orm.drop({ cascade: true });
+  //   await orm.sync({ force: true, alter: true });
+  return orm;
+}
 
-
-
-module.exports = pool
+module.exports = { connection };
