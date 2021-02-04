@@ -1,6 +1,5 @@
 const { CONFIG } = require('./config');
 const { Sequelize } = require('sequelize');
-const path = require('path');
 const { defineWorker, defineTask } = require('./model');
 
 let task, worker;
@@ -27,43 +26,35 @@ async function init() {
 }
 
 async function writeData(data) {
-    await worker.create(data);
+  await worker.create(data);
 }
 
-
-async function removeData(data){
+async function removeData(data) {
   return worker.findOne({ where: { id: data } });
 }
 
-
 async function updateTask(data) {
   const instance = task.findOne({ where: { id: data.id } });
-  instance.job = data.job
-  await instance.save()
+  instance.job = data.job;
+  await instance.save();
 }
-``
+``;
 async function writeDataTask(data) {
   await task.create(data);
 }
 
-
-async function removeDataTask(data){
-return task.findOne({ where: { id: data } });
+async function removeDataTask(data) {
+  return task.findOne({ where: { id: data } });
 }
-
 
 async function readData() {
-const { count, rows } = await worker.findAndCountAll();
-return { count, rows };
+  const { count, rows } = await worker.findAndCountAll();
+  return { count, rows };
 }
-
-
-
-
 
 module.exports = {
   init,
   writeData,
   readData,
-  removeData
+  removeData,
 };
