@@ -32,7 +32,7 @@ create table tasks (
   constraint fk_asignee
     foreign key(assignee_id)
       references workers(id)
-      on delete set null -- cascade
+      on delete cascade
 );
 
 insert into workers (name)
@@ -45,3 +45,9 @@ values
   (1, 'makan'),  
   (2, 'minum'), 
   (1, 'belajar');
+  
+
+select job, done, added_at, workers.name as name
+  from tasks
+  left join workers
+    on workers.id = tasks.assignee_id;
