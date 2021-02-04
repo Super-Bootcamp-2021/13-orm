@@ -21,30 +21,33 @@ function init() {
     // type: "sqlite",
     // database: path.resolve(__dirname, '../../../../sanbercode.db'),
     synchronize: true,
-    dropSchema: true,
+    // dropSchema: true,
     timezone: 'Asia/Jakarta',
     entities: [TaskSchema, WorkerSchema],
   });
 }
 
-async function writeData(connection) {
-  const worker = connection.getRepository('Worker');
-  const budi = worker.create({ name: 'budi' });
-  const susi = worker.create({ name: 'susi' });
-  await worker.save([budi, susi]);
+async function writeWorker(data) {
+  const conn = await init();
+  const worker = conn.getRepository('Worker');
+  const create = worker.create(data);
+  await worker.save(create);
 
-  const task = connection.getRepository('Task');
-  const t1 = new Task(null, 'makan', budi);
-  await task.save(t1);
+  conn.close();
+}
 
-  await task.save([
-    { job: 'minum', assignee: susi },
-    { job: 'belajar', assignee: { id: budi.id } },
-  ]);
+async function writeTask(data) {
+  const conn = await init();
+  const task = conn.getRepository('Task');
+  const create = task.create(data);
+  await task.save(create);
+
+  conn.close();
 }
 
 async function readData() {
-  const task = getConnection().getRepository('Task');
+  const conn = await init();
+  const task = conn.getRepository('Task');
   let jobs = await task.find({ relations: ['assignee'] });
   for (const job of jobs) {
     console.log(job);
@@ -57,16 +60,11 @@ async function readData() {
   for (const job of jobs) {
     console.log(job);
   }
-}
-
-async function main() {
-  const conn = await init();
-  await writeData(conn);
-  await readData();
   conn.close();
-  // getConnection().close();
 }
 
 module.exports = {
-  init,
+  writeWorker,
+  writeTask,
+  readData,
 };

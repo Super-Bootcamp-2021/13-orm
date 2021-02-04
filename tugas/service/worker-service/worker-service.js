@@ -1,29 +1,17 @@
-const fs = require('fs');
-const path = require('path');
-const mime = require('mime-types');
 const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
-const { setData, getData } = require('./redis');
-
-function randomFileName(mimetype) {
-  return (
-    new Date().getTime() +
-    '-' +
-    Math.round(Math.random() * 1000) +
-    '.' +
-    mime.extension(mimetype)
-  );
-}
+const { saveFile } = require('../../lib/storage');
+const { writeWorker } = require('../../lib/orm/main');
 
 async function postService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   let obj = {};
-  let data = JSON.parse(await getData('data'));
+  // let data = JSON.parse(await getData('data'));
 
-  if (!data) {
-    data = { data: [] };
-  }
+  // if (!data) {
+  //   data = { data: [] };
+  // }
 
   function abort() {
     req.unpipe(busboy);
@@ -33,17 +21,16 @@ async function postService(req, res) {
     }
   }
 
-  busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
     switch (fieldname) {
       case 'photo':
         {
-          const destname = randomFileName(mimetype);
-          const store = fs.createWriteStream(
-            path.resolve(__dirname, `./file-storage/${destname}`)
-          );
-          file.on('error', abort);
-          store.on('error', abort);
-          file.pipe(store);
+          try {
+            const attachment = await saveFile(file, mimetype, fieldname);
+            obj[`${fieldname}`] = attachment;
+          } catch (err) {
+            abort();
+          }
         }
         break;
       default: {
@@ -61,8 +48,9 @@ async function postService(req, res) {
     obj[`${fieldname}`] = val;
   });
   busboy.on('finish', async () => {
-    data.data.push(obj);
-    await setData('data', JSON.stringify(data));
+    // data.data.push(obj);
+    await writeWorker({ name: 'siapa' });
+    // await setData('data', JSON.stringify(data));
     console.log('data berhasil disimpan');
     res.end();
   });
@@ -74,16 +62,16 @@ async function postService(req, res) {
 }
 
 async function readWorkerService(req, res) {
-  const data = await getData('data');
+  // const data = await getData('data');
   res.setHeader('Content-Type', 'application/json');
-  res.write(data);
+  // res.write(data);
   res.statusCode = 200;
   res.end();
 }
 
 async function deleteService(req, res) {
   const uri = url.parse(req.url, true);
-  const data = JSON.parse(await getData('data'));
+  // const data = JSON.parse(await getData('data'));
   const name = uri.pathname.replace('/pekerja/delete/', '');
   if (!name) {
     res.statusCode = 400;
@@ -91,13 +79,13 @@ async function deleteService(req, res) {
     res.end();
   }
 
-  for (let i = 0; i < data.data.length; i++) {
-    if (data.data[i].nama === name) {
-      data.data.splice(i, 1);
-    }
-  }
+  // for (let i = 0; i < data.data.length; i++) {
+  //   if (data.data[i].nama === name) {
+  //     data.data.splice(i, 1);
+  //   }
+  // }
 
-  await setData('data', JSON.stringify(data));
+  // await setData('data', JSON.stringify(data));
   res.statusCode = 200;
   res.end();
 }
