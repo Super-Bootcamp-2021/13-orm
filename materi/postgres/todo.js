@@ -1,4 +1,5 @@
 const { Client, Pool } = require('pg');
+const Cursor = require('pg-cursor');
 
 const client = new Client({
   host: '127.0.0.1',
@@ -65,8 +66,32 @@ async function transaction() {
   client2.release();
 }
 
+async function stream() {
+  const client2 = await pool.connect();
+  const cursor = client2.query(new Cursor('select * from todo'));
+
+  function readRow(err, rows) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    if (!rows.length) {
+      cursor.close(() => {
+        client2.release();
+      });
+    }
+    for (const row of rows) {
+      console.log(row);
+    }
+    cursor.read(2, readRow);
+  }
+
+  cursor.read(2, readRow);
+}
+
 module.exports = {
   csp,
   withPool,
   transaction,
+  stream,
 };

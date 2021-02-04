@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
-const { csp, withPool, transaction } = require('./todo');
+const { csp, withPool, transaction, stream } = require('./todo');
 
 async function main() {
-  await transaction();
-  await withPool();
+  stream();
 }
 
 main();
