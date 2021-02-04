@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 const { Sequelize, Model } = require('sequelize');
 
 //variables that attached to the "workers"
-function defineWorkers(orm) {
+function defineWorker(orm) {
   //nama, alamat, email, no-telp, biografi singkat
   return orm.define(
     'worker',
@@ -39,5 +39,5 @@ function defineWorkers(orm) {
 }
 
 module.exports = {
-  defineWorkers,
+  defineWorker,
 };

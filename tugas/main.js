@@ -11,6 +11,7 @@ async function main() {
     await relationship.init();
     console.log('relational database connected');
   } catch (err) {
+		console.log(err);
     console.error('relational database connection failed');
     return;
   }
