@@ -1,13 +1,13 @@
 const CONFIG = {
   DB_CONFIG: {
     host: 'localhost',
-    port: 3306,
-    dialect: 'mariadb',
+    port: 3305,
+    dialect: 'mysql',
     logging: false,
   },
   DATABASE: 'erbium',
-  PASSWORD: '',
   USERNAME: 'root',
+  PASSWORD: 'bilal',
 };
 
-exports.CONFIG = CONFIG
+exports.CONFIG = CONFIG;
