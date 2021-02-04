@@ -6,7 +6,7 @@ const {
   update,
   ERROR_CREATE_DATA_INVALID,
 } = require('./task');
-const { dropTable, read } = require('./test-database');
+const { dropTable, read } = require('../lib/database');
 
 describe('task', function () {
   this.timeout(5000);
