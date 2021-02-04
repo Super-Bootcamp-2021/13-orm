@@ -3,12 +3,12 @@ const url = require('url')
 const { stdout } = require('process')
 
 // const { getTask, saveTask, attachmentService } = require('./task-service')
-// const {
-//     saveWorker,
-//     getWorker,
-//     deleteWorker,
-//     photoService,
-// } = require('./worker-service')
+const {
+    saveWorker,
+    getWorker,
+    deleteWorker,
+    photoService,
+} = require('./controllers/worker.service')
 
 function run() {
     const server = createServer((req, res) => {
