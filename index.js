@@ -1,1 +1,2 @@
-require('./materi/orm');
+// require('./materi/orm');
+require('./tugas');
