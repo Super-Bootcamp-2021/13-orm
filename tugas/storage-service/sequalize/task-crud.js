@@ -34,9 +34,9 @@ async function init() {
 }
 init();
 
-async function writeTask({ assignee_id, job, done }) {    
+async function writeTask({ assignee_id, job, attachment, done }) {    
     const result = await task.create(
-        { assigneeId: assignee_id, job: job, done: done }
+        { assignee_id: assignee_id, job: job, attachment: attachment, done: done }
     );        
     
     return JSON.stringify(result.dataValues);
@@ -57,11 +57,12 @@ async function deleteTask(id) {
     return result.toString();
 }
 
-async function updateTask({id, job, done}) {    
+async function updateTask({ id, job, attachment, done }) {    
     const result = await task.update(
         { 
             job: job, 
-            done: done
+            done: done,
+            attachment: attachment
         },
         { 
             where: {
@@ -72,6 +73,19 @@ async function updateTask({id, job, done}) {
     return result[0].toString();
 }
 
+async function doneTask({ id, done }) {    
+    const result = await task.update(
+        {             
+            done: done,            
+        },
+        { 
+            where: {
+                id: id
+            }
+        }
+    );
+    return result[0].toString();
+}
 // async function main() {
   
   //await writeTask({id: 1, job: 'ngoding', done: true});
@@ -85,6 +99,7 @@ module.exports = {
     writeTask,
     readTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    doneTask
 };
 // main();

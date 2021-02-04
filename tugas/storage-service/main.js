@@ -19,7 +19,8 @@ const {
     writeTask,
     readTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    doneTask
 } = require("./sequalize/task-crud");
 
 inspect = require('util').inspect;
@@ -44,13 +45,7 @@ const server = createServer(async (req, res) => {
             // console.log(req.headers);
             if (method === 'GET') {
 
-                let data = { 
-                    nama: uri.query['nama'], 
-                    email: uri.query['email'], 
-                    telepon: uri.query['telepon'], 
-                    alamat: uri.query['almat'], 
-                    biografi: uri.query['biografi']
-                };
+                let data = { nama: 'ilham', email: 'ilham@mail.com', telepon: '097848', alamat: 'bangkalan', biografi: 'ini biografi'};
 
                 message = await writeWorker(data);                
                 res.setHeader('Content-Type', 'application/json');         
@@ -90,10 +85,10 @@ const server = createServer(async (req, res) => {
             break;        
         case /^\/task\/write/.test(uri.pathname):            
             if (method === 'GET') {
-                let data = {
-                    assignee_id: 19, job: 'ngoding', done: true
-                };                
-                message = await writeTask(data);                
+                // let data = {
+                //     assignee_id: 19, job: 'ngoding', done: true
+                // };                
+                message = await writeTask(JSON.parse(uri.query['data']));                
                 res.setHeader('Content-Type', 'application/json');
             } else {
                 message = 'Method tidak tersedia';                      
@@ -124,7 +119,14 @@ const server = createServer(async (req, res) => {
             } else {
                 message = 'Method tidak tersedia';                      
             }
-            break;            
+            break;       
+        case /^\/task\/done/.test(uri.pathname):                    
+            if (method === 'GET') {                                           
+                message = await doneTask(JSON.parse(uri.query['data']));
+            } else {
+                message = 'Method tidak tersedia';                      
+            }
+            break;        
         default:
             statusCode = 404;                        
             break;

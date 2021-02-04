@@ -67,7 +67,15 @@ function defineTask(orm) {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
-            addedAt: {
+            attachment: {
+                type: DataTypes.TEXT,
+                defaultValue: true
+            },
+            assignee_id: {
+                type: DataTypes.INTEGER,
+                defaultValue: true
+            },
+            added_at: {
                 type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: DataTypes.NOW,
