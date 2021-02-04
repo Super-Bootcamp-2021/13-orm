@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const { stdout } = require('process');
 const url = require('url');
-const { createSvc, updateSvc } = require('./task.service');
+const { createSvc, updateSvc, doneSvc, cancelSvc } = require('./task.service');
 
 let server;
 
@@ -23,9 +23,23 @@ function run() {
           respond(404);
         }
         break;
-      case '/done':
+      case '/update':
         if (req.method === 'POST') {
           return updateSvc(req, res);
+        } else {
+          respond(404);
+        }
+        break;
+      case '/done':
+        if (req.method === 'POST') {
+          return doneSvc(req, res);
+        } else {
+          respond(404);
+        }
+        break;
+      case '/cancel':
+        if (req.method === 'POST') {
+          return cancelSvc(req, res);
         } else {
           respond(404);
         }

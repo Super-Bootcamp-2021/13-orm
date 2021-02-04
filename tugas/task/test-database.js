@@ -37,13 +37,39 @@ async function writeData(data) {
   });
 }
 
-async function taskDone(data) {
+async function updateTask(data) {
   await task.update(
     {
       job: data.job,
       attachment: data.attachment,
       done: data.done,
       cancel: data.cancel,
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
+}
+
+async function taskDone(data) {
+  await task.update(
+    {
+      done: 1, //1 or true
+    },
+    {
+      where: {
+        id: data.id,
+      },
+    }
+  );
+}
+
+async function taskCancel(data) {
+  await task.update(
+    {
+      cancel: 1, //1 or true
     },
     {
       where: {
@@ -60,10 +86,22 @@ async function main(data) {
 
 async function updateDB(data) {
   await init();
+  await updateTask(data);
+}
+
+async function doneDB(data) {
+  await init();
   await taskDone(data);
+}
+
+async function cancelDB(data) {
+  await init();
+  await taskCancel(data);
 }
 
 module.exports = {
   main,
   updateDB,
+  doneDB,
+  cancelDB,
 };

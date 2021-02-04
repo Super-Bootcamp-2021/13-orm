@@ -1,7 +1,13 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/storage');
-const { create, update, ERROR_CREATE_DATA_INVALID } = require('./task');
+const {
+  create,
+  cancel,
+  done,
+  update,
+  ERROR_CREATE_DATA_INVALID,
+} = require('./task');
 
 function createSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -145,7 +151,39 @@ function updateSvc(req, res) {
   req.pipe(busboy);
 }
 
+function doneSvc(req, res) {
+  let data = '';
+  req.on('data', (chunk) => {
+    data += chunk.toString();
+  });
+
+  req.on('end', async () => {
+    const { id } = JSON.parse(data);
+    const task = await done(id);
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(task));
+    res.end();
+  });
+}
+
+function cancelSvc(req, res) {
+  let data = '';
+  req.on('data', (chunk) => {
+    data += chunk.toString();
+  });
+
+  req.on('end', async () => {
+    const { id } = JSON.parse(data);
+    const task = await cancel(id);
+    res.setHeader('content-type', 'application/json');
+    res.write(JSON.stringify(task));
+    res.end();
+  });
+}
+
 module.exports = {
   createSvc,
   updateSvc,
+  doneSvc,
+  cancelSvc,
 };
