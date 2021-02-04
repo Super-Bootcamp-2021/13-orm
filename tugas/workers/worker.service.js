@@ -110,7 +110,7 @@ async function removeSvc(req, res) {
     return;
   }
   try {
-    const worker = await remove(id);
+    const worker = await remove(parseInt(id));
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));

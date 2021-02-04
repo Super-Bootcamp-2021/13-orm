@@ -43,8 +43,7 @@ async function remove(id) {
   if (idx === -1) {
     throw ERROR_WORKER_NOT_FOUND;
   }
-  const deleted = workers[idx];
-  await del('worker', idx);
+  const deleted = await del('worker', id);
   return deleted;
 }
 
