@@ -20,7 +20,10 @@ function setupRelationship(orm) {
 }
 
 async function init() {
-  const orm1 = new Sequelize('sanbercode1', 'root', 'hasan132', {
+  const orm1 = new Sequelize({
+    username: 'testing',
+    password: '',
+    database: 'sanbercode1',
     host: 'localhost',
     port: 5432,
     dialect: 'postgres',
