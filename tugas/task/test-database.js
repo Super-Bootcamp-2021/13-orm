@@ -1,19 +1,24 @@
-/* eslint-disable no-unused-vars */
-const { Sequelize } = require('sequelize');
-const path = require('path');
-const { defineTask } = require('./model');
+const http = require("http");
 
-let task;
+const PORT = 6000;
 
-// function setupRelationship(orm) {
-//   worker = defineWorker(orm);
-//   task = defineTask(orm);
-
-//   task.belongsTo(worker, {
-//     onDelete: 'cascade',
-//     foreignKey: 'assigneeId',
-//   });
-// }
+function createTask(data) {  
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
+}
 
 async function init() {
   const orm1 = new Sequelize('sanbercode2', 'root', '', {
@@ -28,15 +33,8 @@ async function init() {
   task = defineTask(orm);
   await orm.sync();
 }
+//createTask({assignee_id: 3, job: 'ngoding', attachment: 'file.jpg', done: true});
 
-async function writeData(data) {
-  await task.create({
-    job: data.job,
-    attachment: data.attachment,
-    done: data.done,
-    cancel: data.cancel,
-  });
-}
 
 async function updateTask(data) {
   await task.update(
@@ -88,27 +86,65 @@ async function taskCancel(data) {
       },
     }
   );
+
+function updateTask(data) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/update?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function main(data) {
-  await init();
-  await writeData(data);
+//updateTask({id: 1, job: 'bermain', attachment: 'file.jpg', done: true});
+
+function cancelTask(id) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/delete?id=${id}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function updateDB(data) {
-  await init();
-  await updateTask(data);
+//cancelTask(4);
+
+function doneTask(data) {
+  return new Promise((resolve, reject) => {
+    const req = http.request(`http://localhost:${PORT}/task/done?data=${JSON.stringify(data)}`, (res) => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+      res.on("end", () => {        
+        resolve(data);
+      });
+      res.on("error", (err) => {
+        reject(err);
+      });
+    });
+    req.end();
+  });
 }
 
-async function doneDB(data) {
-  await init();
-  await taskDone(data);
-}
-
-async function cancelDB(data) {
-  await init();
-  await taskCancel(data);
-}
 
 async function dropTable() {
   await init();
@@ -129,4 +165,8 @@ module.exports = {
   init,
   dropTable,
   read,
-};
+  createTask,
+  updateTask,
+  cancelTask,
+  doneTask,
+}
