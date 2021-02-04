@@ -45,63 +45,49 @@ async function writeTask(data) {
     conn.close();
 }
 
-async function finishTask(data) {
-    const id = data.id;
-    const conn = await init();
-    await conn
-        .createQueryBuilder()
-        .update('tasks')
-        .set({ done: true })
-        .where("id = :id", { id })
-        .execute();
-
-    conn.close();
-}
-
-async function cancelTask(data) {
-    const id = data.id;
-    const conn = await init();
-    await conn
-        .createQueryBuilder()
-        .update('tasks')
-        .set({ cancel: true })
-        .where("id = :id", { id })
-        .execute();
-
-    conn.close();
-}
-
 async function readTask() {
-    const conn = await init();
-    const task = conn.getRepository('Task');
-    let jobs = await task.find({ relations: ['assignee'] });
-    conn.close();
-    return JSON.stringify(jobs);
+  const conn = await init();
+  const task = conn.getRepository('Task');
+  let jobs = await task.find({ relations: ['assignee'] });
+  conn.close();
+  return JSON.stringify(jobs);
 }
 
-async function readData() {
-    const conn = await init();
-    const task = conn.getRepository('Task');
-    let jobs = await task.find({ relations: ['assignee'] });
-    for (const job of jobs) {
-        console.log(job);
-    }
+async function readWorker() {
+  const conn = await init();
+  const worker = conn.getRepository('Worker');
+  let workers = await worker.find();
+  conn.close();
+  return JSON.stringify(workers);
+}
 
-    jobs = await task
-        .createQueryBuilder('Task')
-        .leftJoinAndSelect('Task.assignee', 'assignee')
-        .getMany();
-    for (const job of jobs) {
-        console.log(job);
-    }
-    conn.close();
+async function deleteWorker(id) {
+  const conn = await init();
+  await conn
+    .createQueryBuilder()
+    .delete()
+    .from('Worker')
+    .where(' id = :id', { id })
+    .execute();
+  conn.close();
+}
+
+async function updateTask(data, id) {
+  const conn = await init();
+  await conn
+    .createQueryBuilder()
+    .update('Task')
+    .set(data)
+    .where(' id = :id', { id })
+    .execute();
+  conn.close();
 }
 
 module.exports = {
-    writeWorker,
-    writeTask,
-    finishTask,
-    cancelTask,
-    readTask,
-    readData,
+  writeWorker,
+  writeTask,
+  readTask,
+  readWorker,
+  deleteWorker,
+  updateTask,
 };

@@ -41,8 +41,8 @@ const server = createServer((req, res) => {
         respond();
       }
       break;
-    case uri.pathname === '/pekerja/delete':
-      if (method === 'GET') {
+    case /^\/pekerja\/delete\/\w+/.test(uri.pathname):
+      if (method === 'DELETE') {
         deleteService(req, res);
       } else {
         message = 'Method tidak tersedia';

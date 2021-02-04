@@ -7,11 +7,6 @@ const { writeWorker } = require('../../lib/orm/main');
 async function postService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   let obj = {};
-  // let data = JSON.parse(await getData('data'));
-
-  // if (!data) {
-  //   data = { data: [] };
-  // }
 
   function abort() {
     req.unpipe(busboy);
@@ -49,7 +44,8 @@ async function postService(req, res) {
   });
   busboy.on('finish', async () => {
     // data.data.push(obj);
-    await writeWorker({ name: 'siapa' });
+    await writeWorker(obj);
+    console.log(obj);
     // await setData('data', JSON.stringify(data));
     console.log('data berhasil disimpan');
     res.end();
