@@ -27,9 +27,9 @@ function subscriber() {
       }
     }
   });
-  subId2 = client.subscribe('totalTask', (msg, reply, subject, sid) => {
+  subId2 = client.subscribe('totalTasks', (msg, reply, subject, sid) => {
     console.log('log: ', msg);
-    registerLog('totalTask');
+    registerLog('totalTasks');
     if (msg === 'unsub') {
       if (subId2) {
         client.unsubscribe(subId2);
