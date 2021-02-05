@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
-const { listSvc, registerSvc, removeSvc } = require('./worker.service');
+const { listSvc, registerSvc, removeSvc } = require('../workers/worker.service');
 const { registerTaskSvc, listTaskSvc, updateStatusTaskSvc } = require('../tasks/task.service');
 
 let server;
@@ -21,21 +21,21 @@ function run() {
     try {
       const uri = url.parse(req.url, true);
       switch (uri.pathname) {
-        case '/register':
+        case '/workers/register':
           if (req.method === 'POST') {
             return registerSvc(req, res);
           } else {
             respond(404);
           }
           break;
-        case '/list':
+        case '/workers/list':
           if (req.method === 'GET') {
             return listSvc(req, res);
           } else {
             respond(404);
           }
           break;
-        case '/remove':
+        case '/workers/remove':
           if (req.method === 'DELETE') {
             return removeSvc(req, res);
           } else {

@@ -1,5 +1,5 @@
 const relationship = require('./lib/relationship');
-const server = require('./workers/server');
+const server = require('./lib/server');
 
 /**
  * main routine
@@ -11,7 +11,6 @@ async function main() {
     await relationship.init();
     console.log('relational database connected');
   } catch (err) {
-    console.log(err);
     console.error('relational database connection failed');
     return;
   }
