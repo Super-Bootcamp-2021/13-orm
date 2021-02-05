@@ -59,11 +59,14 @@ async function update(table, idx, data) {
 }
 
 async function updateStatus(idx, data) {
-  return task.update({status: data}, {
-    where: {
-      id: idx,
-    },
-  });
+  return task.update(
+    { status: data },
+    {
+      where: {
+        id: idx,
+      },
+    }
+  );
 }
 
 async function read(table) {

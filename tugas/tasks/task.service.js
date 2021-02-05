@@ -72,9 +72,7 @@ function registerTaskSvc(req, res) {
   });
 
   busboy.on('field', (fieldname, val) => {
-    if (
-      ['job', 'status', 'workerId'].includes(fieldname)
-    ) {
+    if (['job', 'status', 'workerId'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });
@@ -120,7 +118,6 @@ async function updateStatusTaskSvc(req, res) {
   }
 }
 
-
 async function listTaskSvc(req, res) {
   try {
     const tasks = await listTask();
@@ -133,7 +130,6 @@ async function listTaskSvc(req, res) {
     return;
   }
 }
-
 
 module.exports = {
   listTaskSvc,

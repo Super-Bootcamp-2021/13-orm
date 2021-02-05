@@ -1,8 +1,16 @@
 const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
-const { listSvc, registerSvc, removeSvc } = require('../workers/worker.service');
-const { registerTaskSvc, listTaskSvc, updateStatusTaskSvc } = require('../tasks/task.service');
+const {
+  listSvc,
+  registerSvc,
+  removeSvc,
+} = require('../workers/worker.service');
+const {
+  registerTaskSvc,
+  listTaskSvc,
+  updateStatusTaskSvc,
+} = require('../tasks/task.service');
 
 let server;
 
