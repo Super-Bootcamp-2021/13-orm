@@ -2,11 +2,13 @@ const Busboy = require('busboy');
 const url = require('url');
 const { Writable } = require('stream');
 const { saveFile } = require('../../lib/storage');
-const { writeWorker, readWorker, deleteWorker } = require('../../lib/orm/main');
+const { readWorker, deleteWorker } = require('../../lib/orm/main');
+const { register } = require('./worker');
 
 async function writeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   let obj = {};
+  let finished = false;
 
   function abort() {
     req.unpipe(busboy);
@@ -22,9 +24,15 @@ async function writeWorkerService(req, res) {
         {
           try {
             const photo = await saveFile(file, mimetype, fieldname);
-            obj[`${fieldname}`] = photo;
+            obj[`${fieldname}`] = await photo;
           } catch (err) {
             abort();
+          }
+
+          if (finished) {
+            const reg = await register(obj);
+            res.write(reg);
+            res.end();
           }
         }
         break;
@@ -44,9 +52,7 @@ async function writeWorkerService(req, res) {
   });
 
   busboy.on('finish', async () => {
-    await writeWorker(obj);
-    res.write('data pekerja berhasil disimpan.');
-    res.end();
+    finished = true;
   });
 
   req.on('aborted', abort);

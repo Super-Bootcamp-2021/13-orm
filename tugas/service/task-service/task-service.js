@@ -1,11 +1,13 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../../lib/storage');
-const { writeTask, updateTask, readTask } = require('../../lib/orm/main');
+const { updateTask, readTask } = require('../../lib/orm/main');
+const { addJob } = require('./task');
 
 async function addTaskService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
   let obj = {};
+  let finished = false;
 
   function abort() {
     req.unpipe(busboy);
@@ -25,6 +27,12 @@ async function addTaskService(req, res) {
           } catch (err) {
             abort();
           }
+
+          if (finished) {
+            const add = await addJob(obj);
+            res.write(add);
+            res.end();
+          }
         }
         break;
       default: {
@@ -43,10 +51,7 @@ async function addTaskService(req, res) {
   });
 
   busboy.on('finish', async () => {
-    console.log('objek addnya : ', obj);
-    await writeTask(obj);
-    res.write('data pekerjaan berhasil disimpan');
-    res.end();
+    finished = true;
   });
 
   req.on('aborted', abort);
