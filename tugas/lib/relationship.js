@@ -12,20 +12,25 @@ function setupRelationship(orm) {
 
   task.belongsTo(worker, {
     onDelete: 'cascade',
-    foreignKey: 'assigneeId',
+    foreignKey: 'assignee_id',
   });
 }
 
 async function init() {
-  const orm = new Sequelize('sanbercode1', 'postgres', 'postgres', {
-    host: 'localhost',
-    port: 5432,
-    dialect: 'postgres',
+  // const orm = new Sequelize('sanbercode1', 'postgres', 'postgres', {
+  //   host: 'localhost',
+  //   port: 5432,
+  //   dialect: 'postgres',
+  //   logging: false,
+  // });
+  const orm = new Sequelize('', '', '', {
+    storage: path.join(__dirname, '../', 'database.db'),
+    dialect: 'sqlite',
     logging: false,
   });
   await orm.authenticate();
   setupRelationship(orm);
-  await orm.drop({ cascade: true });
+  // await orm.drop({ cascade: true });
   await orm.sync({ force: true, alter: true });
 }
 

@@ -2,6 +2,7 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const { listSvc, registerSvc, removeSvc } = require('./worker.service');
+const { registerTaskSvc, listTaskSvc } = require('../tasks/task.service');
 
 let server;
 
@@ -37,6 +38,20 @@ function run() {
         case '/remove':
           if (req.method === 'DELETE') {
             return removeSvc(req, res);
+          } else {
+            respond(404);
+          }
+          break;
+        case '/tasks/add':
+          if (req.method === 'POST') {
+            return registerTaskSvc(req, res);
+          } else {
+            respond(404);
+          }
+          break;
+        case '/tasks/list':
+          if (req.method === 'GET') {
+            return listTaskSvc(req, res);
           } else {
             respond(404);
           }
