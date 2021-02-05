@@ -1,47 +1,24 @@
-const { EntitySchema } = require('typeorm');
+const { DataTypes } = require('sequelize');
 
-class Worker {
-  constructor(id, name, age, bio, address, photo) {
-    this.id = id;
-    this.name = name;
-    this.age = age;
-    this.bio = bio;
-    this.address = address;
-    this.photo = photo;
-  }
-}
+exports.model;
 
-const WorkerSchema = new EntitySchema({
-  name: 'Worker',
-  target: Worker,
-  tableName: 'workers',
-  columns: {
-    id: {
-      type: 'int',
-      primary: true,
-      generated: true,
+exports.defineModel = function (orm) {
+  exports.model = orm.define(
+    'worker',
+    {
+      name: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
+      age: DataTypes.INTEGER,
+      bio: DataTypes.TEXT,
+      address: DataTypes.TEXT,
+      photo: {
+        type: DataTypes.STRING(255),
+      },
     },
-    name: {
-      type: 'varchar',
-      length: 255,
-    },
-    age: {
-      type: 'int',
-    },
-    bio: {
-      type: 'text',
-    },
-    address: {
-      type: 'text',
-    },
-    photo: {
-      type: 'varchar',
-      length: 255,
-    },
-  },
-});
-
-module.exports = {
-  Worker,
-  WorkerSchema,
+    {
+      tableName: 'workers',
+    }
+  );
 };

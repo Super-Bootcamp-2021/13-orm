@@ -1,6 +1,4 @@
 const { connect } = require('./lib/orm');
-const { TaskSchema } = require('./tasks/task.model');
-const { WorkerSchema } = require('./worker/worker.model');
 const workerServer = require('./worker/server');
 
 /**
@@ -9,13 +7,11 @@ const workerServer = require('./worker/server');
 async function init() {
   try {
     console.log('connect to database');
-    await connect([WorkerSchema, TaskSchema], {
-      type: 'postgres',
+    await connect('sanbercode2', 'postgres', 'postgres', {
       host: 'localhost',
       port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'sanbercode2',
+      dialect: 'postgres',
+      logging: false,
     });
     console.log('database connected');
   } catch (err) {
@@ -39,7 +35,7 @@ async function main(command) {
       workerServer.run();
       break;
     default:
-      console.log(`${command} tidak dikenali`);
+      console.log(`${command} 5tidak dikenali`);
       console.log('command yang valid: task, worker');
   }
 }

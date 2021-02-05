@@ -1,5 +1,4 @@
-const { getConnection } = require('typeorm');
-const { Worker } = require('./worker.model');
+const workerModel = require('./worker.model');
 
 const ERROR_REGISTER_DATA_INVALID = 'data registrasi pekerja tidak lengkap';
 const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
@@ -15,35 +14,43 @@ const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
  * @property {string} photo
  */
 
+function rowToData(worker) {
+  return {
+    id: worker.id,
+    name: worker.name,
+    age: worker.age,
+    bio: worker.bio,
+    address: worker.address,
+    photo: worker.photo,
+  };
+}
+
 /**
  * register new worker
- * @param {Worker} data worker profile
+ * @param {WorkerData} data worker profile
  * @returns {Promise<Worker>} new worker profile with id
  */
 async function register(data) {
   if (!data.name || !data.age || !data.bio || !data.address || !data.photo) {
     throw ERROR_REGISTER_DATA_INVALID;
   }
-  const workerRepo = getConnection().getRepository('Worker');
-  const worker = new Worker(
-    null,
-    data.name,
-    parseInt(data.age, 10),
-    data.bio,
-    data.address,
-    data.photo
-  );
-  await workerRepo.save(worker);
-  return worker;
+  const worker = await workerModel.model.create({
+    name: data.name,
+    age: parseInt(data.age, 10),
+    bio: data.bio,
+    address: data.address,
+    photo: data.photo,
+  });
+  return rowToData(worker);
 }
 
 /**
  * get list of registered workers
  * @returns {Promise<Worker[]>} list of registered workers
  */
-function list() {
-  const workerRepo = getConnection().getRepository('Worker');
-  return workerRepo.find();
+async function list() {
+  const res = await workerModel.model.findAndCountAll();
+  return res.rows.map((row) => rowToData(row));
 }
 
 /**
@@ -52,13 +59,12 @@ function list() {
  * @returns {Promise<Worker>} removed worker
  */
 async function remove(id) {
-  const workerRepo = getConnection().getRepository('Worker');
-  const worker = await workerRepo.findOne(id);
+  const worker = await workerModel.model.findByPk(id);
   if (!worker) {
     throw ERROR_WORKER_NOT_FOUND;
   }
-  await workerRepo.delete(id);
-  return worker;
+  await worker.destroy();
+  return rowToData(worker);
 }
 
 module.exports = {

@@ -1,21 +1,31 @@
-const { createConnection } = require('typeorm');
-// eslint-disable-next-line no-unused-vars
-const { EntitySchema } = require('typeorm');
+const { Sequelize } = require('sequelize');
+const taskModel = require('../tasks/task.model');
+const workerModel = require('../worker/worker.model');
+
+exports.orm;
 
 /**
  * connect to database
  * @param {EntitySchema[]} entities model entitites schemas
  * @param {*} config typeorm connection config
  */
-function connect(entities, config) {
-  return createConnection({
+exports.connect = async function (database, username, password, config) {
+  exports.orm = new Sequelize(database, username, password, {
     ...config,
-    synchronize: true,
-    timezone: 'Asia/Jakarta',
-    entities,
+    logging: false,
+    timestamps: false,
+  });
+  exports.orm.authenticate();
+  initRelationship();
+  exports.orm.sync({ alter: true });
+};
+
+function initRelationship() {
+  taskModel.defineModel(exports.orm);
+  workerModel.defineModel(exports.orm);
+
+  taskModel.model.belongsTo(workerModel.model, {
+    onDelete: 'cascade', // set null, restrict
+    foreignKey: 'assigneeId',
   });
 }
-
-module.exports = {
-  connect,
-};

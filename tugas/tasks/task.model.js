@@ -1,48 +1,33 @@
-const { EntitySchema } = require('typeorm');
+const { DataTypes } = require('sequelize');
 
-class Task {
-  constructor(id, job, assignee, done, addedAt) {
-    this.id = id;
-    this.job = job;
-    this.done = done;
-    this.addedAt = addedAt;
-    this.assignee = assignee;
-  }
-}
+exports.model;
 
-const TaskSchema = new EntitySchema({
-  name: 'Task',
-  tableName: 'tasks',
-  target: Task,
-  columns: {
-    id: {
-      type: 'int',
-      primary: true,
-      generated: true,
+exports.defineModel = function (orm) {
+  exports.model = orm.define(
+    'task',
+    {
+      job: DataTypes.TEXT,
+      assigneeId: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: exports.worker,
+          key: 'id',
+        },
+      },
+      done: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      addedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
-    job: {
-      type: 'text',
-    },
-    done: {
-      type: 'boolean',
-      default: false,
-    },
-    addedAt: {
-      type: 'timestamp',
-      name: 'added_at',
-      nullable: false,
-      default: () => 'NOW()',
-    },
-  },
-  relations: {
-    assignee: {
-      target: 'Worker',
-      type: 'many-to-one',
-      onDelete: 'CASCADE',
-    },
-  },
-});
-module.exports = {
-  Task,
-  TaskSchema,
+    {
+      timestamps: false,
+      tableName: 'tasks',
+      underscored: true,
+    }
+  );
 };
