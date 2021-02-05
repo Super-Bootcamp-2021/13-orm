@@ -21,7 +21,8 @@ function init() {
     // type: "sqlite",
     // database: path.resolve(__dirname, '../../../../sanbercode.db'),
     synchronize: true,
-    dropSchema: true,
+    dropSchema: false,
+    logging: true,
     timezone: 'Asia/Jakarta',
     entities: [TaskSchema, WorkerSchema],
   });
@@ -48,7 +49,7 @@ async function writeDataTaskDB(connection, obj) {
   await task.save(isiTask);
 }
 
-async function readDataTaskDB(con) {
+function readDataTaskDB(con) {
   const task = con.getRepository('Task');
   return task;
 }
@@ -102,8 +103,16 @@ async function writeDataTask(obj) {
 async function readDataTask() {
   try {
     const conn = getConnection();
-    await readDataTaskDB(conn);
+    const task = readDataTaskDB(conn);
+    let jobs = await task.find({
+      relations: ['assignee'],
+      where: [
+        {done: '1'},
+        {done: '2'}
+      ]
+    });
     conn.close();
+    return jobs;
   } catch (err) {
     console.error(err);
   }
