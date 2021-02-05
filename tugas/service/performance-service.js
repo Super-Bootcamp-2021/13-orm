@@ -128,7 +128,7 @@ function loggingMsg(from, status){
 
 function main() {
   subscriber();
-  loggingMsg("hadi","oke");
+  loggingMsg("totalWorkers","oke");
 }
 
 
