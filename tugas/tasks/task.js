@@ -1,8 +1,8 @@
-const { read, write, del } = require('../lib/relationship');
+const { read, write, del, updateStatus } = require('../lib/relationship');
 const { ERROR_WORKER_NOT_FOUND } = require('../workers/worker');
 
-const ERROR_REGISTER_DATA_TASK_MISSING = 'data task tidak lengkap';
-const ERROR_REGISTER_DATA_TASK_INVALID = 'data task invalid';
+const ERROR_DATA_TASK_MISSING = 'data task tidak lengkap';
+const ERROR_DATA_TASK_INVALID = 'data task invalid';
 const ERROR_WORKER_ID_INVALID = 'data pekerja invalid';
 const ERROR_TASK_NOT_FOUND = 'task tidak ditemukan';
 const INFO_TASK_WORKER_WAS_SUBMITTED =
@@ -10,7 +10,7 @@ const INFO_TASK_WORKER_WAS_SUBMITTED =
 
 async function registerTask(data) {
   if (!data.job || !data.status || !data.workerId || !data.document) {
-    throw ERROR_REGISTER_DATA_TASK_MISSING;
+    throw ERROR_DATA_TASK_MISSING;
   }
   const task = {
     job: data.job,
@@ -23,7 +23,7 @@ async function registerTask(data) {
     throw ERROR_WORKER_ID_INVALID;
   }
   if (!['progress', 'cancel', 'done'].includes(data.status.toLowerCase())) {
-    throw ERROR_REGISTER_DATA_TASK_INVALID;
+    throw ERROR_DATA_TASK_INVALID;
   }
 
   let workers = await read('worker');
@@ -47,17 +47,40 @@ async function registerTask(data) {
 
 async function listTask() {
   let tasks = await read('task');
-  if (!tasks) {
-    tasks = [];
+  var filterTask = tasks.rows.filter((taskData) => {
+    return taskData.status.toLowerCase() != 'cancel';
+  });
+  return filterTask;
+}
+
+async function updateStatusTask(data) {
+  console.log(data);
+  if (!data.id || !data.status) {
+    throw ERROR_DATA_TASK_MISSING;
   }
-  return tasks;
+  let tasks = await read('task');
+  if (!tasks) {
+    throw ERROR_TASK_NOT_FOUND;
+  }
+  if (!['progress', 'cancel', 'done'].includes(data.status.toLowerCase())) {
+    throw ERROR_DATA_TASK_INVALID;
+  }
+  const idx = tasks.rows.findIndex((task) => task.id == data.id);
+  if (idx === -1) {
+    throw ERROR_TASK_NOT_FOUND;
+  }
+  await updateStatus(data.id, data.status);
+  tasks = await read('task');
+  const updated = tasks.rows[idx];
+  return updated.job;
 }
 
 module.exports = {
   registerTask,
   listTask,
-  ERROR_REGISTER_DATA_TASK_MISSING,
-  ERROR_REGISTER_DATA_TASK_INVALID,
+  updateStatusTask,
+  ERROR_DATA_TASK_MISSING,
+  ERROR_DATA_TASK_INVALID,
   ERROR_WORKER_ID_INVALID,
   ERROR_TASK_NOT_FOUND,
   INFO_TASK_WORKER_WAS_SUBMITTED,

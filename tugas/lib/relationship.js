@@ -3,6 +3,7 @@ const { Sequelize } = require('sequelize');
 const path = require('path');
 const { defineTask } = require('../tasks/model');
 const { defineWorker } = require('../workers/model');
+require('dotenv').config();
 
 let worker, task;
 
@@ -17,20 +18,27 @@ function setupRelationship(orm) {
 }
 
 async function init() {
-  // const orm = new Sequelize('sanbercode1', 'postgres', 'postgres', {
-  //   host: 'localhost',
-  //   port: 5432,
-  //   dialect: 'postgres',
-  //   logging: false,
-  // });
-  const orm = new Sequelize('', '', '', {
-    storage: path.join(__dirname, '../', 'database.db'),
-    dialect: 'sqlite',
-    logging: false,
-  });
+  const orm =
+    process.env.DB_ENGINE_TYPE == 'sqlite'
+      ? new Sequelize('', '', '', {
+          storage: path.join(__dirname, '../', process.env.DB_FILE),
+          dialect: process.env.DB_DIALECT,
+          logging: false,
+        })
+      : new Sequelize(
+          process.env.DB_NAME,
+          process.env.DB_USER,
+          process.env.DB_PASS,
+          {
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            dialect: process.env.DB_DIALECT,
+            logging: false,
+          }
+        );
   await orm.authenticate();
   setupRelationship(orm);
-  // await orm.drop({ cascade: true });
+  await orm.drop({ cascade: true });
   await orm.sync({ force: true, alter: true });
 }
 
@@ -43,6 +51,32 @@ async function write(table, data) {
     default:
       return 'table not found;';
   }
+}
+
+async function update(table, idx, data) {
+  switch (table) {
+    case 'worker':
+      return worker.update(data, {
+        where: {
+          id: idx,
+        },
+      });
+    case 'task':
+      return task.update(data, {
+        where: {
+          id: idx,
+        },
+      });
+    default:
+      return 'table not found;';
+  }
+}
+async function updateStatus(idx, data) {
+  return task.update({status: data}, {
+    where: {
+      id: idx,
+    },
+  });
 }
 
 async function read(table) {
@@ -82,4 +116,6 @@ module.exports = {
   write,
   read,
   del,
+  update,
+  updateStatus,
 };

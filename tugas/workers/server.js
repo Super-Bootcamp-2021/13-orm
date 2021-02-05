@@ -2,7 +2,7 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const { listSvc, registerSvc, removeSvc } = require('./worker.service');
-const { registerTaskSvc, listTaskSvc } = require('../tasks/task.service');
+const { registerTaskSvc, listTaskSvc, updateStatusTaskSvc } = require('../tasks/task.service');
 
 let server;
 
@@ -45,6 +45,13 @@ function run() {
         case '/tasks/add':
           if (req.method === 'POST') {
             return registerTaskSvc(req, res);
+          } else {
+            respond(404);
+          }
+          break;
+        case '/tasks/update/status':
+          if (req.method === 'POST') {
+            return updateStatusTaskSvc(req, res);
           } else {
             respond(404);
           }
