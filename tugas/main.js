@@ -1,46 +1,19 @@
-const {
-  init,
-  writeData,
-  readAllData,
-  readOneData,
-  deleteData,
-  updateDataDone,
-  updateDataCancel,
-} = require('./lib/orm/main');
+
+const { init } = require('./lib/orm/main');
+const server = require('./server');
 
 async function main() {
-  const data = {
-    name: 'Angga',
-    email: 'angga@email.com',
-    nohp: '123456789',
-    address: 'Nganjuk',
-    photo: 'hallo.png',
-    bio: 'World',
-  };
+  try {
+    console.log('Connecting to ORM...');
+    await init();
+    console.log('ORM connected');
+  } catch (err) {
+    console.error('ORM connection failed');
+    await init().close();
+  }
 
-  const data2 = {
-    job: 'Design',
-    attachment: 'text.txt',
-    done: false,
-    cancel: false,
-  };
-
-  const conn = await init();
-  //test writeData
-  await writeData('Worker', data);
-  await writeData('Task', data2);
-  //test readAllData
-  await readAllData('Task');
-  //test readOneData
-  await readOneData('Worker', 2);
-  //test removeData
-  await deleteData('Worker', 2);
-  //test updateDataDone
-  await updateDataDone('Task', 2, true);
-  //test updateDataCancel
-  await updateDataCancel('Task', 3, true);
-  conn.close();
-  // getConnection().close();
+  console.log('running service...');
+  server.run();
 }
 
 main();
