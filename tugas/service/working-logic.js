@@ -7,10 +7,6 @@ async function register(data) {
     if (!data.name || !data.email || !data.biografi || !data.address || !data.nohp || !data.photo) {
       throw ERROR_REGISTER_DATA_INVALID;
     }
-    let workers = await read('worker');
-    if (!workers) {
-      workers = [];
-    }
     const worker = {
       id: Math.round(Math.random() * 1000).toString(),
       name: data.name,
@@ -20,8 +16,7 @@ async function register(data) {
       nohp: data.nohp,
       photo: data.photo,
     };
-    workers.push(worker);
-    await writeDataWorker('worker', workers);
+    await writeDataWorker(worker);
     return worker;
 }
 

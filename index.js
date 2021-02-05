@@ -1,1 +1,1 @@
-require('./tugas/database/typeorm/main');
+require('./tugas/index');

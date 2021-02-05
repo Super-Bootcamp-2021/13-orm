@@ -21,7 +21,8 @@ function init() {
     // type: "sqlite",
     // database: path.resolve(__dirname, '../../../../sanbercode.db'),
     synchronize: true,
-    dropSchema: true,
+    dropSchema: false,
+    logging: true,
     timezone: 'Asia/Jakarta',
     entities: [TaskSchema, WorkerSchema],
   });
@@ -33,7 +34,7 @@ async function writeDataWorkerDB(connection, obj) {
   const isiWorker = new Worker(
     null,
     obj.name,
-    obj.profile,
+    obj.address,
     obj.email,
     obj.nohp,
     obj.biografi,
@@ -48,11 +49,35 @@ async function writeDataTaskDB(connection, obj) {
   await task.save(isiTask);
 }
 
-async function readDataTaskDB(con) {
+function readDataTaskDB(con) {
   const task = con.getRepository('Task');
   return task;
 }
-
+async function deleteDataDB(con, id) {
+  const worker = con
+    .createQueryBuilder()
+    .delete(Worker)
+    .where('id = :id', { id: id })
+    .execute();
+  return worker;
+}
+async function getoneDB(id) {
+  const worker = getConnection()
+    .getRepository(Worker)
+    .createQueryBuilder('worker')
+    .where('worker.id = :id', { id: id })
+    .getOne();
+  return worker;
+}
+async function updateDB(con, id, done) {
+  const task = con
+    .createQueryBuilder()
+    .update(Task)
+    .set({ done: done })
+    .where('id = :id', { id: id })
+    .execute();
+  return task;
+}
 async function writeDataWorker(obj) {
   try {
     const conn = getConnection();
@@ -78,7 +103,38 @@ async function writeDataTask(obj) {
 async function readDataTask() {
   try {
     const conn = getConnection();
-    await readDataTaskDB(conn);
+    const task = readDataTaskDB(conn);
+    let jobs = await task.find({
+      relations: ['assignee'],
+      where: [
+        {done: '1'},
+        {done: '2'}
+      ]
+    });
+    conn.close();
+    return jobs;
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function deleteData(id) {
+  try {
+    const conn = getConnection();
+    await deleteDataDB(conn, id);
+    conn.close();
+    return getoneDB(id);
+  } catch (err) {
+    console.error(err);
+  }
+
+  // getConnection().close();
+}
+async function updateData(id, done) {
+  try {
+    const conn = getConnection();
+    await updateDB(conn, id, done);
     conn.close();
   } catch (err) {
     console.error(err);
@@ -92,4 +148,6 @@ module.exports = {
   writeDataTask,
   init,
   readDataTask,
+  deleteData,
+  updateData,
 };

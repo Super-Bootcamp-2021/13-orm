@@ -3,23 +3,14 @@ const url = require('url');
 const { Writable } = require('stream');
 const {
   register,
-  //list,
-  //remove,
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
-} = require('./worker');
+} = require('./working-logic');
 const { upload } = require('../database/typeorm/storage');
-// eslint-disable-next-line no-unused-vars
-const { IncomingMessage, ServerResponse } = require('http');
 
-/**
- * service to register new worker
- * @param {IncomingMessage} req
- * @param {ServerResponse} res
- */
-function registerSvc(req, res) {
+function storeWorkerService(req, res) {
   const busboy = new Busboy({ headers: req.headers });
-
+  res.setHeader('content-type', 'application/json');
   const data = {
     name: '',
     email: '',
@@ -28,8 +19,6 @@ function registerSvc(req, res) {
     nohp: '',
     photo: '',
   };
-
-  let finished = false;
 
   function abort() {
     req.unpipe(busboy);
@@ -42,35 +31,7 @@ function registerSvc(req, res) {
   busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
     switch (fieldname) {
       case 'photo':
-        try {
-          data.photo = await supload(file, mimetype);
-        } catch (err) {
-          abort();
-        }
-        if (finished) {
-          try {
-            const worker = await register(data);
-            res.setHeader('content-type', 'application/json');
-            res.write(JSON.stringify(worker));
-          } catch (err) {
-            if (err === ERROR_REGISTER_DATA_INVALID) {
-              res.statusCode = 401;
-            } else {
-              res.statusCode = 500;
-            }
-            res.write(err);
-          }
-          res.end();
-        }
-        break;
-      default: {
-        const noop = new Writable({
-          write(chunk, encding, callback) {
-            setImmediate(callback);
-          },
-        });
-        file.pipe(noop);
-      }
+        upload(data, fieldname, file, mimetype, abort);
     }
   });
 
@@ -81,7 +42,18 @@ function registerSvc(req, res) {
   });
 
   busboy.on('finish', async () => {
-    finished = true;
+    try {
+      const worker = await register(data);
+      await res.write(JSON.stringify(worker));
+    } catch (err) {
+      if (err === ERROR_REGISTER_DATA_INVALID) {
+        res.statusCode = 401;
+      } else {
+        res.statusCode = 500;
+      }
+      res.write(err);
+    }
+    await res.end();
   });
 
   req.on('aborted', abort);
@@ -142,7 +114,5 @@ async function removeSvc(req, res) {
 }
 
 module.exports = {
-  listSvc,
-  registerSvc,
-  removeSvc,
+  storeWorkerService,
 };

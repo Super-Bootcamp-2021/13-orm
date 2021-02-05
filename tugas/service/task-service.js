@@ -1,15 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const mime = require('mime-types');
 const Busboy = require('busboy');
 const url = require('url');
-const { setValueToDb, setTask, getValue,  getTaskByName, upTaskByName} = require('../kv/redis');
-const { Writable } = require('stream');
+const { register, taskSelesai, taskBatal, ERROR_REGISTER_DATA_INVALID, list } = require('./task-logic');
+const { upload } = require('../database/typeorm/storage');
 
 
 function storeTaskService(req, res) {
-  let task = {};
   const busboy = new Busboy({ headers: req.headers });
+  res.setHeader('content-type', 'application/json');
+  const data = {
+    job: '',
+    detail: '',
+    attach: '',
+    assignee: '',
+  };
 
   function abort() {
     req.unpipe(busboy);
@@ -18,14 +21,33 @@ function storeTaskService(req, res) {
       res.end();
     }
   }
-  busboy.on('field', (fieldname, val) => {
-    task[fieldname] = val;
+
+  busboy.on('file', async (fieldname, file, filename, encoding, mimetype) => {
+    switch (fieldname) {
+      case 'attach':
+        upload(data, fieldname, file, mimetype, abort);
+    }
   });
+
+  busboy.on('field', (fieldname, val) => {
+    if (['job', 'detail', 'attach', 'assignee'].includes(fieldname)) {
+      data[fieldname] = val;
+    }
+  });
+
   busboy.on('finish', async () => {
-    await setTask(task);
-    await setValueToDb();
-    res.write('data berhasil di tambahkan');
-    res.end();
+      try {
+        const task = await register(data);
+        await res.write(JSON.stringify(task));
+      } catch (err) {
+        if (err === ERROR_REGISTER_DATA_INVALID) {
+          res.statusCode = 401;
+        } else {
+          res.statusCode = 500;
+        }
+        res.write(err);
+      }
+      await res.end();
   });
 
   req.on('aborted', abort);
@@ -34,54 +56,73 @@ function storeTaskService(req, res) {
   req.pipe(busboy);
 }
 
-async function getTaskByNameService(req, res) {
+async function upTaskService(req, res) {
   const uri = url.parse(req.url, true);
-  const filename = uri.pathname.replace('/cari/', '');
-  if (!filename) {
-    res.statusCode = 400;
-    res.write('request tidak sesuai');
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
     res.end();
+    return;
   }
-
-  const value = await getTaskByName(filename);
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value);
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
-}
-
-async function upTaskByNameService(req, res) {
-    const uri = url.parse(req.url, true);
-    const filename = uri.pathname.replace('/update/', '');
-    if (!filename) {
-      res.statusCode = 400;
-      res.write('request tidak sesuai');
+  try {
+    await taskSelesai(id);
+    res.statusCode = 200;
+    res.write(`Update ID dengan ${id}`);
+    res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
       res.end();
+      return;
     }
-
-    const value = await upTaskByName(filename);
-  res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value);
-  setValueToDb();
-  res.statusCode = 200;
-  res.write(data);
-  res.end();
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
+}
+async function softDeleteTaskService(req, res) {
+  const uri = url.parse(req.url, true);
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
+    res.end();
+    return;
+  }
+  try {
+    await taskBatal(id);
+    res.statusCode = 200;
+    res.write(`batalkan task dengan ${id}`);
+    res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
 }
 
 
 async function getTaskService(req, res) {
-  const value = await getValue();
+  const value = await list();
   res.setHeader('Content-Type', 'application/json');
-  const data = JSON.stringify(value.task);
+  const data = JSON.stringify(value);
   res.statusCode = 200;
   res.write(data);
   res.end();
 }
 
+
 module.exports = {
   storeTaskService,
   getTaskService,
-  upTaskByNameService,
-  getTaskByNameService,
+  upTaskService,
+  softDeleteTaskService
 };

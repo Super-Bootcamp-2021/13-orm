@@ -32,8 +32,8 @@ const TaskSchema = new EntitySchema({
       type: 'text',
     },
     done: {
-      type: 'boolean',
-      default: false,
+      type: 'int',
+      default: 2,
     },
     addedAt: {
       type: 'timestamp',
