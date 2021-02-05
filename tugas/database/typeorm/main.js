@@ -54,8 +54,8 @@ function readDataTaskDB(con) {
   return task;
 }
 
-function readDataWorkerDB(con) {
-  const worker = con.getRepository('Worker');
+function readDataWorkerDB() {
+  const worker = getConnection().getRepository('Worker');
   return worker;
 }
 async function deleteDataDB(con, id) {
@@ -125,12 +125,13 @@ async function readDataTask() {
   // getConnection().close();
 }
 
+
+
 async function deleteData(id) {
   try {
     const conn = getConnection();
     await deleteDataDB(conn, id);
     conn.close();
-    return getoneDB(id);
   } catch (err) {
     console.error(err);
   }
@@ -157,4 +158,5 @@ module.exports = {
   deleteData,
   updateData,
   readDataWorkerDB,
+  getoneDB,
 };
