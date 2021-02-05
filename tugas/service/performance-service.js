@@ -87,7 +87,7 @@ function subscriber() {
 //   interval = setInterval(sendCommand, 1000);
 // }
 
-function loggingMsg(from,status){
+function loggingMsg(from, status){
     let date = new Date()
     let msg = `${date} from ${from} status ${status}`
     client.publish('log', msg)
