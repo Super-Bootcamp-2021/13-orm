@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const nats = require('nats');
+const {registerLog}= require('./performance')
 
 const client = nats.connect();
 
@@ -17,7 +18,8 @@ client.on('close', (err) => {
 function subscriber() {
   let subId1, subId2, subId3;
   subId1 = client.subscribe('log', (msg, reply, subject, sid) => {
-    console.log('sub-1: ', msg);
+    console.log('log: ', msg);
+    registerLog(msg);
     if (msg === 'unsub') {
       if (subId1) {
         client.unsubscribe(subId1);
@@ -95,7 +97,10 @@ function loggingMsg(from, status){
 
 function main() {
   subscriber();
+  loggingMsg("hadi","oke");
 }
+
+
 
 module.exports = {
     loggingMsg,
