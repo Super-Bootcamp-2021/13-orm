@@ -17,7 +17,7 @@ const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
 
 /**
  * register new worker
- * @param {Worker} data worker profile
+ * @param {WorkerData} data worker profile
  * @returns {Promise<Worker>} new worker profile with id
  */
 async function register(data) {

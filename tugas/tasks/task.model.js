@@ -42,6 +42,7 @@ const TaskSchema = new EntitySchema({
     },
   },
 });
+
 module.exports = {
   Task,
   TaskSchema,
