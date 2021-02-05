@@ -2,6 +2,9 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const {
+  storeWorkerService
+} = require('./working-service');
+const {
   storeTaskService,
   getTaskService,
   upTaskService,
@@ -9,6 +12,7 @@ const {
 } = require('./task-service');
 const { init } = require('../database/typeorm/main');
 const { getConnection } = require('typeorm');
+
 
 function initServer() {
   const server = createServer(async (req, res) => {
@@ -29,7 +33,7 @@ function initServer() {
     switch (true) {
       case uri.pathname === '/store':
         if (method === 'POST') {
-          //storeProfileService(req, res);
+          storeWorkerService(req, res);
         } else {
           message = 'Method tidak tersedia';
           respond();
