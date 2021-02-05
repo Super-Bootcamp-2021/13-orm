@@ -20,24 +20,16 @@ function setupRelationship(orm) {
 }
 
 async function init() {
-  const orm1 = new Sequelize('sanbercode1', 'root', 'hasan132', {
+  const orm1 = new Sequelize({
+    username: 'testing',
+    password: '',
+    database: 'sanbercode1',
     host: 'localhost',
-    port: 3306,
-    dialect: 'mariadb',
+    port: 5432,
+    dialect: 'postgres',
     logging: false,
   });
-  const orm2 = new Sequelize('sanbercode1', 'root', 'hasan132', {
-    host: 'localhost',
-    port: 3306,
-    dialect: 'mariadb',
-    logging: false,
-  });
-  const orm3 = new Sequelize('', '', '', {
-    storage: path.resolve(__dirname, './sanbercode.db'),
-    dialect: 'sqlite',
-    logging: false,
-  });
-  const orm = orm3;
+  const orm = orm1;
   await orm.authenticate();
   setupRelationship(orm);
   await orm.drop({ cascade: true });
