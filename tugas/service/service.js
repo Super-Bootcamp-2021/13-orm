@@ -2,7 +2,8 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const {
-  storeWorkerService
+  storeWorkerService,
+  getWorkerService,
 } = require('./working-service');
 const {
   storeTaskService,
@@ -40,8 +41,8 @@ function initServer() {
         }
         break;
       case uri.pathname === '/getallworker':
-        if (method === 'POST') {
-          //getValueService(req, res);
+        if (method === 'GET') {
+          getWorkerService(req, res);
         } else {
           message = 'Method tidak tersedia';
           respond();

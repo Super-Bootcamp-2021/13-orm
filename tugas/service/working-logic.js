@@ -1,4 +1,4 @@
-const { writeDataWorker } = require('../database/typeorm/main');
+const { writeDataWorker,  readDataWorkerDB} = require('../database/typeorm/main');
 
 const ERROR_REGISTER_DATA_INVALID = 'data registrasi pekerja tidak lengkap';
 const ERROR_WORKER_NOT_FOUND = 'pekerja tidak ditemukan';
@@ -20,13 +20,10 @@ async function register(data) {
     return worker;
 }
 
-// async function list() {
-//     let workers = await read('worker');
-//     if (!workers) {
-//       workers = [];
-//     }
-//     return workers;
-// }
+async function list() {
+  const worker = await readDataWorkerDB();
+  return worker;
+}
 
 // async function remove(id) {
 //     let workers = await read('worker');
@@ -44,7 +41,7 @@ async function register(data) {
   
   module.exports = {
     register,
-    //list,
+    list,
     //remove,
     ERROR_REGISTER_DATA_INVALID,
     ERROR_WORKER_NOT_FOUND,

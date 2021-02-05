@@ -3,6 +3,7 @@ const url = require('url');
 const { Writable } = require('stream');
 const {
   register,
+  list,
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('./working-logic');
@@ -67,7 +68,7 @@ function storeWorkerService(req, res) {
  * @param {IncomingMessage} req
  * @param {ServerResponse} res
  */
-async function listSvc(req, res) {
+async function getWorkerService(req, res) {
   try {
     const workers = await list();
     res.setHeader('content-type', 'application/json');
@@ -115,4 +116,5 @@ async function removeSvc(req, res) {
 
 module.exports = {
   storeWorkerService,
+  getWorkerService
 };
