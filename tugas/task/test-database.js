@@ -48,10 +48,10 @@ function updateTask(data) {
 
 //updateTask({id: 1, job: 'bermain', attachment: 'file.jpg', done: true});
 
-function cancelTask(id) {
+function cancelTask(data) {
   return new Promise((resolve, reject) => {
     const req = http.request(
-      `http://localhost:${PORT}/task/delete?id=${id}`,
+      `http://localhost:${PORT}/task/cancel?data=${JSON.stringify(data)}`,
       (res) => {
         let data = '';
         res.on('data', (chunk) => {

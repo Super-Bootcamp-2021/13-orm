@@ -20,6 +20,7 @@ const {
   updateTask,
   deleteTask,
   doneTask,
+  cancelTask,
 } = require('./sequalize/task-crud');
 
 const server = createServer(async (req, res) => {
@@ -106,8 +107,8 @@ const server = createServer(async (req, res) => {
       break;
     case /^\/task\/update/.test(uri.pathname):
       if (method === 'GET') {
-        let data = { assignee_id: 19, job: 'bermain', done: true };
-        message = await updateTask(data);
+        // let data = { assignee_id: 19, job: 'bermain', done: true };
+        message = await updateTask(JSON.parse(uri.query['data']));
       } else {
         message = 'Method tidak tersedia';
       }
@@ -123,6 +124,13 @@ const server = createServer(async (req, res) => {
     case /^\/task\/done/.test(uri.pathname):
       if (method === 'GET') {
         message = await doneTask(JSON.parse(uri.query['data']));
+      } else {
+        message = 'Method tidak tersedia';
+      }
+      break;
+    case /^\/task\/cancel/.test(uri.pathname):
+      if (method === 'GET') {
+        message = await cancelTask(JSON.parse(uri.query['data']));
       } else {
         message = 'Method tidak tersedia';
       }

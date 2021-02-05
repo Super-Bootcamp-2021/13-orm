@@ -31,11 +31,11 @@ function defineWorker(orm) {
       notelp: {
         type: DataTypes.NUMBER(255),
         allowNull: false,
-    },
+      },
       biografi: {
         type: DataTypes.STRING(255),
         allowNull: false,
-    },
+      },
     },
     {
       timestamps: false,
@@ -45,7 +45,7 @@ function defineWorker(orm) {
 }
 
 /**
-  * @property {string} name
+ * @property {string} name
  * @property {string} alamat
  * @property {string} email
  * @property {number} notelp

@@ -1,21 +1,24 @@
-const http = require("http");
+const http = require('http');
 
 const PORT = 6000;
 
-function createTask(data) {  
+function createTask(data) {
   return new Promise((resolve, reject) => {
-    const req = http.request(`http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`, (res) => {
-      let data = "";
-      res.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-      res.on("end", () => {        
-        resolve(data);
-      });
-      res.on("error", (err) => {
-        reject(err);
-      });
-    });
+    const req = http.request(
+      `http://localhost:${PORT}/task/write?data=${JSON.stringify(data)}`,
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk.toString();
+        });
+        res.on('end', () => {
+          resolve(data);
+        });
+        res.on('error', (err) => {
+          reject(err);
+        });
+      }
+    );
     req.end();
   });
 }
