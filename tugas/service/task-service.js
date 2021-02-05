@@ -18,7 +18,7 @@ function storeTaskService(req, res) {
     req.unpipe(busboy);
     if (!req.aborted) {
       res.statusCode = 413;
-      loggingMsg('Failed Store Data', res.statusCode);
+      loggingMsg('totalTasks', res.statusCode);
       res.end();
     }
   }
@@ -40,17 +40,15 @@ function storeTaskService(req, res) {
     try {
       const task = await register(data);
       await res.write(JSON.stringify(task));
-      loggingMsg('Succes Store Data', res.statusCode);
     } catch (err) {
       if (err === ERROR_REGISTER_DATA_INVALID) {
         res.statusCode = 401;
-        loggingMsg(ERROR_REGISTER_DATA_INVALID, res.statusCode);
       } else {
         res.statusCode = 500;
-        loggingMsg('Failed store Data', res.statusCode);
       }
       res.write(err);
     }
+    loggingMsg('totalTasks', res.statusCode);
     await res.end();
   });
 
@@ -66,7 +64,7 @@ async function upTaskService(req, res) {
   if (!id) {
     res.statusCode = 401;
     res.write('parameter id tidak ditemukan');
-    loggingMsg('Fail Update Task ID salah', res.statusCode);
+    loggingMsg('finish', res.statusCode);
     res.end();
     return;
   }
@@ -74,18 +72,18 @@ async function upTaskService(req, res) {
     await taskSelesai(id);
     res.statusCode = 200;
     res.write(`Update ID dengan ${id}`);
-    loggingMsg('Succes Update Task', res.statusCode);
+    loggingMsg('finish', res.statusCode);
     res.end();
   } catch (err) {
     if (err === ERROR_WORKER_NOT_FOUND) {
       res.statusCode = 404;
       res.write(err);
-      loggingMsg('Fail Update task Task', res.statusCode);
+      loggingMsg('finish', res.statusCode);
       res.end();
       return;
     }
     res.statusCode = 500;
-    loggingMsg('Fail Update Task', res.statusCode);
+    loggingMsg('finish', res.statusCode);
     res.end();
     return;
   }
@@ -97,6 +95,7 @@ async function softDeleteTaskService(req, res) {
   if (!id) {
     res.statusCode = 401;
     res.write('parameter id tidak ditemukan');
+    loggingMsg('cancel', res.statusCode);
     res.end();
     return;
   }
@@ -104,18 +103,18 @@ async function softDeleteTaskService(req, res) {
     await taskBatal(id);
     res.statusCode = 200;
     res.write(`batalkan task dengan ${id}`);
-    loggingMsg('Succes Batalkan Task', res.statusCode);
+    loggingMsg('cancel', res.statusCode);
     res.end();
   } catch (err) {
     if (err === ERROR_WORKER_NOT_FOUND) {
       res.statusCode = 404;
       res.write(err);
-      loggingMsg('Worker tidak tidemukan pada Task', res.statusCode);
+      loggingMsg('cancel', res.statusCode);
       res.end();
       return;
     }
     res.statusCode = 500;
-    loggingMsg('Fail Batalkan Task', res.statusCode);
+    loggingMsg('cancel', res.statusCode);
     res.end();
     return;
   }
@@ -128,7 +127,6 @@ async function getTaskService(req, res) {
   const data = JSON.stringify(value);
   res.statusCode = 200;
   res.write(data);
-  loggingMsg('GetTaskService', res.statusCode);
   res.end();
 }
 

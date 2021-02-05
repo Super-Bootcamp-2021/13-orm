@@ -8,7 +8,6 @@ async function register(data) {
       throw ERROR_REGISTER_DATA_INVALID;
     }
     const worker = {
-      id: Math.round(Math.random() * 1000).toString(),
       name: data.name,
       email: data.email,
       biografi: data.biografi,
