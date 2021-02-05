@@ -1,1 +1,1 @@
-require('./tugas/index');
+require('./tugas/');

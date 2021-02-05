@@ -2,7 +2,10 @@ const { createServer } = require('http');
 const url = require('url');
 const { stdout } = require('process');
 const {
-  storeWorkerService
+  storeWorkerService,
+  getWorkerService,
+  getWorkerByIdService,
+  deleteWorkerService,
 } = require('./working-service');
 const {
   storeTaskService,
@@ -40,24 +43,24 @@ function initServer() {
         }
         break;
       case uri.pathname === '/getallworker':
-        if (method === 'POST') {
-          //getValueService(req, res);
+        if (method === 'GET') {
+          getWorkerService(req, res);
         } else {
           message = 'Method tidak tersedia';
           respond();
         }
         break;
-      case /^\/find\/\w+/.test(uri.pathname):
+      case uri.pathname === '/find':
         if (method === 'GET') {
-          //getValueByNameService(req, res);
+          getWorkerByIdService(req, res);
         } else {
           message = 'Method tidak tersedia';
           respond();
         }
         break;
-      case /^\/del\/\w+/.test(uri.pathname):
-        if (method === 'GET') {
-          //delValueService(req, res);
+      case uri.pathname === '/del':
+        if (method === 'DELETE') {
+          deleteWorkerService(req, res);
         } else {
           message = 'Method tidak tersedia';
           respond();

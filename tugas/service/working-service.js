@@ -3,6 +3,9 @@ const url = require('url');
 const { Writable } = require('stream');
 const {
   register,
+  list,
+  findWorker,
+  del,
   ERROR_REGISTER_DATA_INVALID,
   ERROR_WORKER_NOT_FOUND,
 } = require('./working-logic');
@@ -67,7 +70,7 @@ function storeWorkerService(req, res) {
  * @param {IncomingMessage} req
  * @param {ServerResponse} res
  */
-async function listSvc(req, res) {
+async function getWorkerService(req, res) {
   try {
     const workers = await list();
     res.setHeader('content-type', 'application/json');
@@ -85,7 +88,7 @@ async function listSvc(req, res) {
  * @param {IncomingMessage} req
  * @param {ServerResponse} res
  */
-async function removeSvc(req, res) {
+async function getWorkerByIdService(req, res) {
   const uri = url.parse(req.url, true);
   const id = uri.query['id'];
   if (!id) {
@@ -95,7 +98,7 @@ async function removeSvc(req, res) {
     return;
   }
   try {
-    const worker = await remove(id);
+    const worker = await findWorker(id);
     res.setHeader('content-type', 'application/json');
     res.statusCode = 200;
     res.write(JSON.stringify(worker));
@@ -113,6 +116,36 @@ async function removeSvc(req, res) {
   }
 }
 
+async function deleteWorkerService(req, res) {
+  const uri = url.parse(req.url, true);
+  const id = uri.query['id'];
+  if (!id) {
+    res.statusCode = 401;
+    res.write('parameter id tidak ditemukan');
+    res.end();
+    return;
+  }
+  try {
+    await del(id);
+    res.statusCode = 200;
+    res.write(`berhasil dihapus`);
+    res.end();
+  } catch (err) {
+    if (err === ERROR_WORKER_NOT_FOUND) {
+      res.statusCode = 404;
+      res.write(err);
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.end();
+    return;
+  }
+}
+
 module.exports = {
   storeWorkerService,
+  getWorkerService,
+  getWorkerByIdService,
+  deleteWorkerService
 };
