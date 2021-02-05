@@ -16,10 +16,10 @@ client.on('close', (err) => {
 });
 
 function subscriber() {
-  let subId1, subId2, subId3;
-  subId1 = client.subscribe('log', (msg, reply, subject, sid) => {
+  let subId1, subId2, subId3, subId4;
+  subId1 = client.subscribe('totalWorkers', (msg, reply, subject, sid) => {
     console.log('log: ', msg);
-    registerLog(msg);
+    registerLog('totalWorkers');
     if (msg === 'unsub') {
       if (subId1) {
         client.unsubscribe(subId1);
@@ -27,6 +27,37 @@ function subscriber() {
       }
     }
   });
+  subId2 = client.subscribe('totalTask', (msg, reply, subject, sid) => {
+    console.log('log: ', msg);
+    registerLog('totalTask');
+    if (msg === 'unsub') {
+      if (subId2) {
+        client.unsubscribe(subId2);
+        console.log('sub-1: unsubscribed');
+      }
+    }
+  });
+  subId3 = client.subscribe('finish', (msg, reply, subject, sid) => {
+    console.log('log: ', msg);
+    registerLog('finish');
+    if (msg === 'unsub') {
+      if (subId3) {
+        client.unsubscribe(subId3);
+        console.log('sub-1: unsubscribed');
+      }
+    }
+  });
+  subId4 = client.subscribe('cancel', (msg, reply, subject, sid) => {
+    console.log('log: ', msg);
+    registerLog('cancel');
+    if (msg === 'unsub') {
+      if (subId4) {
+        client.unsubscribe(subId4);
+        console.log('sub-1: unsubscribed');
+      }
+    }
+  });
+  
 //   subId2 = client.subscribe(
 //     'command',
 //     { queue: 'worker' },
@@ -92,7 +123,7 @@ function subscriber() {
 function loggingMsg(from, status){
     let date = new Date()
     let msg = `${date} from ${from} status ${status}`
-    client.publish('log', msg)
+    client.publish(from, msg)
 }
 
 function main() {
