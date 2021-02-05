@@ -1,7 +1,7 @@
 const redis = require('redis');
 const { promisify } = require('util');
 
-let client;
+let client  = redis.createClient();
 
 /**
  * connect to database
@@ -36,7 +36,7 @@ function save(db, data) {
  * @returns {Promise<any>} data
  */
 async function read(db) {
-  const getAsync = promisify(client.get).bind(client);
+  const getAsync = promisify(client.get.bind(client));
   const val = await getAsync(db);
   return JSON.parse(val);
 }
