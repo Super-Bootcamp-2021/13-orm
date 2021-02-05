@@ -3,6 +3,9 @@ const url = require('url')
 const { Writable } = require('stream');
 const { saveFile } = require('../storage/storage');
 const { register, listWorker, removeWorker } = require('../lib/worker');
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime-types');
 
 // save data worker
 function saveWorker(req, res) {
@@ -130,7 +133,7 @@ function photoService(req, res) {
       res.write('request tidak sesuai');
       res.end();
     }
-    const file = path.resolve(__dirname, `./storage/photo/${filename}`);
+    const file = path.resolve(__dirname, `../storage/photo/${filename}`);
     const exist = fs.existsSync(file);
     if (!exist) {
       res.statusCode = 404;

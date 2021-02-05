@@ -6,13 +6,17 @@ function defineTask(orm) {
         'task',
         {
             name: DataTypes.STRING,
+            attachment: {
+                type: DataTypes.STRING,
+                defaultValue: null
+            },
             isCompleted: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
-            attachment: {
-                type: DataTypes.STRING,
-                defaultValue: null
+            isDeleted: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
             },
             addedAt: {
                 type: DataTypes.DATE,
