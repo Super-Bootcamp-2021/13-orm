@@ -2,7 +2,7 @@
 const { Sequelize } = require('sequelize');
 const path = require('path');
 const { defineWorker } = require('./model');
-const { task } = require('./task/task.js')
+const { task } = require('./task/task.js');
 
 let worker;
 
@@ -29,7 +29,7 @@ async function create(data) {
     adress: data.adress,
     email: data.email,
     notelp: data.notelp,
-    biografi: data.biografi
+    biografi: data.biografi,
   };
 
   await main(worker);
@@ -38,12 +38,12 @@ async function create(data) {
 
 async function writeData() {
   let data = {
-    nama: uri.query["nama"],
-    alamat: uri.query["alamat"],
-    email: uri.query["email"],
-    telepon: uri.query["telepon"],
-    bigorafi: uri.query["biografi"],
-  }
+    nama: uri.query['nama'],
+    alamat: uri.query['alamat'],
+    email: uri.query['email'],
+    telepon: uri.query['telepon'],
+    bigorafi: uri.query['biografi'],
+  };
   await task.bulkCreate([
     { assigneeName: budi.id, job: task.job.toString() },
     { assigneeName: budi.id, attachment: task.attachment.toString() },
@@ -80,6 +80,6 @@ module.exports = {
   main,
   setupRelationship,
   create,
-  writeData
+  writeData,
   // readData
 };

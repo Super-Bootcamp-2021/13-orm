@@ -30,16 +30,17 @@ async function init() {
   await orm.authenticate();
   setupRelationship(orm);
   // await orm.drop({ cascade: true });
-  // await orm.sync({ force: true, alter: true });
+  await orm.sync();
 }
 init();
 
-async function writeTask({ assignee_id, job, attachment, done }) {
+async function writeTask({ job, attachment, done, cancel }) {
   const result = await task.create({
-    assignee_id: assignee_id,
     job: job,
+    // assigneeId: assigneeId,
     attachment: attachment,
     done: done,
+    cancel: cancel,
   });
 
   return JSON.stringify(result.dataValues);
@@ -60,12 +61,14 @@ async function deleteTask(id) {
   return result.toString();
 }
 
-async function updateTask({ id, job, attachment, done }) {
+async function updateTask({ id, job, attachment, done, cancel }) {
   const result = await task.update(
     {
       job: job,
-      done: done,
+      // assigneeId: assigneeId,
       attachment: attachment,
+      done: done,
+      cancel: cancel,
     },
     {
       where: {
@@ -76,10 +79,24 @@ async function updateTask({ id, job, attachment, done }) {
   return result[0].toString();
 }
 
-async function doneTask({ id, done }) {
+async function doneTask({ id }) {
   const result = await task.update(
     {
-      done: done,
+      done: 1,
+    },
+    {
+      where: {
+        id: id,
+      },
+    }
+  );
+  return result[0].toString();
+}
+
+async function cancelTask({ id }) {
+  const result = await task.update(
+    {
+      cancel: 1,
     },
     {
       where: {
@@ -104,5 +121,6 @@ module.exports = {
   updateTask,
   deleteTask,
   doneTask,
+  cancelTask,
 };
 // main();

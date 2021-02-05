@@ -1,6 +1,12 @@
 const ERROR_CREATE_DATA_INVALID = 'data pekerjaan tidak lengkap';
 const ERROR_TASK_NOT_FOUND = 'pekerjaan tidak ditemukan';
-const { main, updateDB, doneDB, cancelDB } = require('../lib/database');
+// const { main, updateDB, doneDB, cancelDB } = require('../lib/database');
+const {
+  createTask,
+  updateTask,
+  cancelTask,
+  doneTask,
+} = require('./test-database');
 
 async function create(data) {
   if (!data.job) {
@@ -12,9 +18,10 @@ async function create(data) {
     attachment: data.attachment,
     done: data.done,
     cancel: data.cancel,
+    assigneeId: data.assigneeId,
   };
 
-  await main(task);
+  await createTask(task);
   return task;
 }
 
@@ -25,9 +32,10 @@ async function update(data) {
     attachment: data.attachment,
     done: data.done,
     cancel: data.cancel,
+    assigneeId: data.assigneeId,
   };
 
-  await updateDB(task);
+  await updateTask(task);
   return task;
 }
 
@@ -36,7 +44,7 @@ async function done(id) {
     id: id,
   };
 
-  await doneDB(task);
+  await doneTask(task);
   return task;
 }
 
@@ -45,7 +53,7 @@ async function cancel(id) {
     id: id,
   };
 
-  await cancelDB(task);
+  await cancelTask(task);
   return task;
 }
 

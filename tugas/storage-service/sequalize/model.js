@@ -63,17 +63,17 @@ function defineTask(orm) {
     'task',
     {
       job: DataTypes.TEXT,
-      done: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
       attachment: {
         type: DataTypes.TEXT,
         defaultValue: true,
       },
-      assignee_id: {
-        type: DataTypes.INTEGER,
-        defaultValue: true,
+      done: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      cancel: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
       added_at: {
         type: DataTypes.DATE,

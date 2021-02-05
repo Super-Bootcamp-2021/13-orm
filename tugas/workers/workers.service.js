@@ -1,12 +1,7 @@
 const Busboy = require('busboy');
 const { Writable } = require('stream');
 const { saveFile } = require('../lib/storage');
-const {
-    main,
-    setupRelationship,
-    create,
-    writeData
-} = require('./workers.js');
+const { main, setupRelationship, create, writeData } = require('./workers.js');
 
 function createSvc(req, res) {
   const busboy = new Busboy({ headers: req.headers });
@@ -16,7 +11,7 @@ function createSvc(req, res) {
     adress: '',
     email: '',
     notelp: '',
-    biografi: ''
+    biografi: '',
   };
 
   let finished = false;
@@ -43,7 +38,7 @@ function createSvc(req, res) {
             res.setHeader('content-type', 'application/json');
             res.write(JSON.stringify(task));
           } catch (err) {
-            if (err === "Data Not Found") {
+            if (err === 'Data Not Found') {
               res.statusCode = 401;
             } else {
               res.statusCode = 500;
@@ -65,7 +60,7 @@ function createSvc(req, res) {
   });
 
   busboy.on('field', async (fieldname, val) => {
-    if (['adress','email','notelp','biografi'].includes(fieldname)) {
+    if (['adress', 'email', 'notelp', 'biografi'].includes(fieldname)) {
       data[fieldname] = val;
     }
   });
