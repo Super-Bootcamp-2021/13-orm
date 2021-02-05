@@ -3,18 +3,20 @@ const url = require('url')
 const { Writable } = require('stream');
 const { saveFile } = require('../storage/storage');
 const { register, listWorker, removeWorker } = require('../lib/worker');
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime-types');
 
 // save data worker
 function saveWorker(req, res) {
     const busboy = new Busboy({ headers: req.headers })
 
-    let data = {        // set bentuk data agar ketika di get tidak otomatis diurutkan berdasarkan key
+    let data = {        
         name: '',
         address: '',
         email: '',
         phone: '',
         biografi: '',
-        deleted: false,
     }
 
     let finished = false;
@@ -35,7 +37,7 @@ function saveWorker(req, res) {
             case 'photo':
                 try {
                   const folder = 'photo';
-                  data.photo = await saveFile(file, mimetype,folder);
+                  data.photo = "localhost:9999/photo/"+await saveFile(file, mimetype,folder);
                 } catch (err) {
                   abort();
                 }
@@ -81,9 +83,9 @@ function saveWorker(req, res) {
 }
 
 //get data worker
-function getWorker(req, res) {
+async function getWorker(req, res) {
 
-    const data = listWorker();
+    const data = await listWorker();
 
     const message = JSON.stringify({
         status: 'success',
@@ -101,7 +103,7 @@ function deleteWorker(req, res) {
     const uri = url.parse(req.url, true)
     const id = uri.pathname.replace('/worker/', '')
     try {
-        const result = removeWorker();
+        const result = removeWorker(id);
         message = JSON.stringify({
             status: 'success',
             message: 'success delete data',
@@ -131,7 +133,7 @@ function photoService(req, res) {
       res.write('request tidak sesuai');
       res.end();
     }
-    const file = path.resolve(__dirname, `./storage/photo/${filename}`);
+    const file = path.resolve(__dirname, `../storage/photo/${filename}`);
     const exist = fs.existsSync(file);
     if (!exist) {
       res.statusCode = 404;

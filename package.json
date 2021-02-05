@@ -8,7 +8,7 @@
     "start": "node .",
     "dev": "nodemon .",
     "lint": "eslint .",
-    "migration": "node ./tugas/db/migrations/main.js"
+    "migrate": "node ./tugas/db/migrations/main.js"
   },
   "author": "",
   "license": "ISC",

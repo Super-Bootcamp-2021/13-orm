@@ -1,12 +1,12 @@
 const url = require('url');
 const {
-  read,
-  create,
-  delete: deleteTask,
-  completed,
-} = require('../controllers/task.service');
+  saveWorker,
+  getWorker,
+  deleteWorker,
+  photoService,
+} = require('../controllers/worker.service')
 
-function taskRoutes(req, res) {
+function workerRoutes(req, res) {
   req.params = {};
 
   let method = req.method;
@@ -26,30 +26,26 @@ function taskRoutes(req, res) {
   };
 
   switch (true) {
-    case uri.pathname === '/task':
+    case uri.pathname === '/worker':
       res.setHeader('content-type', 'application/json');
       if (method === 'GET') {
-        message = 'GET TASK';
-        read(req, res);
+        getWorker(req, res); 
       } else if (method === 'POST') {
-        message = 'POST TASK';
-        create(req, res);
+        saveWorker(req, res);
       } else {
         message = 'Method tidak tersedia';
         statusCode = 404;
         respond();
       }
       break;
-    case /task*/.test(uri.pathname):
+    case /worker*/.test(uri.pathname):
       res.setHeader('content-type', 'application/json');
       req.params.id = uri.pathname.split('/')[2];
       if (method === 'DELETE') {
-        deleteTask(req, res);
-        break;
-      } else if (method === 'PUT') {
-        completed(req, res);
+        deleteWorker(req,res);
         break;
       }
+    break
     default:
       message = 'Method tidak tersedia';
       statusCode = 404;
@@ -57,4 +53,4 @@ function taskRoutes(req, res) {
   }
 }
 
-module.exports = taskRoutes;
+module.exports = workerRoutes;

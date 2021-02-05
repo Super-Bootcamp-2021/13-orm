@@ -3,13 +3,21 @@ const { stdout } = require('process');
 
 const routers = require('./routers')
 
-const server = createServer((req, res) => {
-  routers(req, res);
-});
+function run(){
+    const server = createServer((req, res) => {
+      routers(req, res);
+    });
+    
+    const PORT = 9999;
+    server.listen(PORT, () => {
+      stdout.write(`server listening on port ${PORT}\n`);
+    });
+}
 
-const PORT = 9999;
-server.listen(PORT, () => {
-  stdout.write(`server listening on port ${PORT}\n`);
-});
+function stop() {
+    if (server) {
+        server.close()
+    }
+}
 
-module.exports = server
+module.exports = {run,stop}

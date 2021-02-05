@@ -1,21 +1,22 @@
-// const {connection} = require('../connection')
-const {defineTask} = require('./task')
-const {connection} = require('../connection')
+const {connection} = require('../connection');
+const {defineWorker} = require('./worker.migration');
+const {defineTask} = require('./task');
 
-let task
 
-async function migrate() {
-    // worker = defineWorker();
-        const connect = await connection();
-        defineTask(connect);
-        await connect.drop({cascade: true});
-        await connect.sync({force: true, alter: true})
 
-    // task.belongsTo(worker, { // relationnya belum
-    //     onDelete: 'cascade',
-    //     foreignKey: 'WorkerId',
-    // });
+
+async function migrate(){
+    await connection.authenticate();
+    const worker = defineWorker(connection);
+    const task = defineTask(connection);
+
+    task.belongsTo(worker, {
+        onDelete: 'cascade',
+        foreignKey: 'assignee_id',
+    });
+
+
+    connection.sync({force: true});
 }
-migrate()
 
-module.exports = {task}
+migrate();

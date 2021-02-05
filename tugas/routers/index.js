@@ -1,5 +1,9 @@
 const url = require('url')
 const taskRoutes = require('./task.route');
+const workerRoutes = require('./worker.route');
+const storageRoutes = require('./storage.route');
+
+
 
 function main(req, res){
     let message = 'tidak ditemukan data';
@@ -12,10 +16,20 @@ function main(req, res){
       res.end();
     };
 
+    if(uri.pathname.includes('/worker')){
+      workerRoutes(req, res); 
+      return
+    }
+
     if(uri.pathname.includes('/task')){
         taskRoutes(req, res); 
         return
     }
+
+    if(uri.pathname.includes('/photo') || uri.pathname.includes('/attachment')){
+      storageRoutes(req, res); 
+      return
+  }
 
     respond()
     // workers routes
