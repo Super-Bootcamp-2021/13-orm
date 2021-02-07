@@ -8,11 +8,10 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}\\index.js",
-      "console": "integratedTerminal",
+      "args": ["worker"],
+      "console": "integratedTerminal"
     },
     {
       "type": "node",
@@ -22,6 +21,6 @@
       "args": [],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
-    },
+    }
   ]
 }

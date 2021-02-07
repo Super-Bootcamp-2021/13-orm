@@ -22,6 +22,7 @@ function init() {
     // database: path.resolve(__dirname, '../../../../sanbercode.db'),
     synchronize: true,
     dropSchema: true,
+    logging: true,
     timezone: 'Asia/Jakarta',
     entities: [TaskSchema, WorkerSchema],
   });

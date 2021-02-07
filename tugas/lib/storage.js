@@ -19,6 +19,13 @@ function randomFileName(mimetype) {
   );
 }
 
+/**
+ * save file to file system
+ * @param {Readable} file readable file stream
+ * @param {string} mimetype mime type
+ * @returns {Promise<string>} generated filename
+ */
+
 function saveFile(file, mimetype) {
   const destname = randomFileName(mimetype);
   const store = fs.createWriteStream(
